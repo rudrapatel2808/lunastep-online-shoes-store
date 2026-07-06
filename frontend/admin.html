@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - ShoeStore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- RBAC Check -->
+  <script src="auth.js"></script>
+  <script>checkAuth('admin');</script>
+
+  <div class="topbar">
+    <div class="brand"><span class="mark"></span> ShoeStore Admin</div>
+    <div class="tabs">
+      <a href="admin.html" class="tab active">Dashboard</a>
+      <a href="index.html" class="tab">View Store</a>
+    </div>
+    <div class="topbar-actions">
+      <select id="currencySelector" style="background:transparent; border:none; color:var(--primary); font-family:inherit; font-weight:700; cursor:pointer; margin-right:8px; outline:none;">
+        <option value="USD">🇺🇸 USD ($)</option>
+        <option value="EUR">🇪🇺 EUR (€)</option>
+        <option value="GBP">🇬🇧 GBP (£)</option>
+        <option value="INR">🇮🇳 INR (₹)</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="section dash">
+      <div class="side reveal in">
+        <div style="font-size:11px; font-weight:800; color:var(--text-faint); text-transform:uppercase; letter-spacing:1px; margin:0 0 14px 20px;">Store Admin</div>
+        <div class="side-item active">Overview</div>
+        <div class="side-item">Orders</div>
+        <div class="side-item">Customers</div>
+        <div class="side-item">Settings</div>
+      </div>
+      <div class="main">
+        <div class="kpi-row reveal in" style="transition-delay:.1s;">
+          <div class="glass kpi">
+            <div class="top"><div class="ico">💰</div></div>
+            <div class="val">$24.8k</div><div class="lbl">Today's Revenue</div>
+          </div>
+          <div class="glass kpi">
+            <div class="top"><div class="ico">🛒</div></div>
+            <div class="val">142</div><div class="lbl">Orders Placed</div>
+          </div>
+          <div class="glass kpi">
+            <div class="top"><div class="ico">👥</div></div>
+            <div class="val">1,204</div><div class="lbl">Active Visitors</div>
+          </div>
+          <div class="glass kpi">
+            <div class="top"><div class="ico">✨</div></div>
+            <div class="val">38</div><div class="lbl">AI Conversions</div>
+          </div>
+        </div>
+        <div class="glass panel reveal in" style="transition-delay:.2s;">
+          <div class="panel-head" style="display:flex; justify-content:space-between; margin-bottom:20px;"><h3>Recent Orders</h3><button class="btn btn-ghost btn-sm">View All</button></div>
+          <table>
+            <thead><tr><th>Order</th><th>Customer</th><th>Item</th><th>Status</th><th>Total</th></tr></thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

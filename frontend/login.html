@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Online Shoes Selling System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .login-container { display:flex; align-items:center; justify-content:center; min-height:80vh; }
+    .login-box { width:100%; max-width:400px; padding:40px; background:var(--card); border-radius:var(--r-lg); box-shadow:0 10px 30px rgba(0,0,0,0.05); text-align:center; }
+    .login-box input { width:100%; padding:14px; margin-bottom:16px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:14px; }
+    .login-box input:focus { outline:none; border-color:var(--primary); }
+    .error { color:var(--danger); font-size:13px; font-weight:600; margin-bottom:16px; display:none; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand"><span class="mark"></span> ShoeStore</div>
+    <div class="tabs">
+      <a href="index.html" class="tab">← Back to Store</a>
+    </div>
+  </div>
+
+  <div class="app login-container">
+    <div class="login-box">
+      <h2 style="margin-bottom:8px;">Welcome Back</h2>
+      <p style="color:var(--text-dim); font-size:14px; margin-bottom:24px;">Sign in to access your dashboard.</p>
+      <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <div class="error" id="loginError">Invalid credentials! Try admin/admin123 or manager/manager123.</div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Sign In</button>
+      </form>
+      <div style="margin-top:24px; font-size:12px; color:var(--text-faint); text-align:left;">
+        <strong>Demo Accounts:</strong><br>
+        Admin Dashboard: admin / admin123<br>
+        Inventory Staff: manager / manager123
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>
