@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SoleCart — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<style>
+  :root{
+    --bg:#050505;
+    --bg2:#0E1117;
+    --primary:#3B82F6;
+    --secondary:#7C3AED;
+    --accent:#06B6D4;
+    --accent2:#EC4899;
+    --success:#10B981;
+    --warning:#F59E0B;
+    --danger:#F43F5E;
+    --card:rgba(255,255,255,0.08);
+    --card-hover:rgba(255,255,255,0.12);
+    --border:rgba(255,255,255,0.12);
+    --border-strong:rgba(255,255,255,0.22);
+    --text:#F5F6F8;
+    --text-dim:#9BA1AE;
+    --text-faint:#60656F;
+    --blur:30px;
+    --r-lg:24px;
+    --r-md:16px;
+    --r-sm:10px;
+    --grad-primary:linear-gradient(135deg,var(--primary),var(--secondary));
+    --grad-accent:linear-gradient(135deg,var(--accent),var(--primary));
+    --grad-hot:linear-gradient(135deg,var(--accent2),var(--secondary));
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden;}
+  body{ position:relative; min-height:100vh; }
+  ::selection{ background:rgba(59,130,246,0.35); }
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.15); border-radius:10px; }
+
+  /* ---------- AURORA BACKGROUND ---------- */
+  .aurora{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .aurora span{ position:absolute; border-radius:50%; filter:blur(90px); opacity:0.35; mix-blend-mode:screen; }
+  .a1{ width:600px; height:600px; background:var(--primary); top:-200px; left:-100px; animation:float1 22s ease-in-out infinite; }
+  .a2{ width:500px; height:500px; background:var(--secondary); top:10%; right:-150px; animation:float2 26s ease-in-out infinite; }
+  .a3{ width:550px; height:550px; background:var(--accent2); bottom:-200px; left:20%; animation:float3 30s ease-in-out infinite; }
+  .a4{ width:400px; height:400px; background:var(--accent); bottom:5%; right:15%; animation:float1 18s ease-in-out infinite reverse; }
+  @keyframes float1{ 0%,100%{ transform:translate(0,0) scale(1);} 50%{ transform:translate(80px,60px) scale(1.15);} }
+  @keyframes float2{ 0%,100%{ transform:translate(0,0) scale(1);} 50%{ transform:translate(-100px,80px) scale(0.9);} }
+  @keyframes float3{ 0%,100%{ transform:translate(0,0) scale(1);} 50%{ transform:translate(60px,-100px) scale(1.1);} }
+
+  .noise{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.03;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .cursor-glow{ position:fixed; width:400px; height:400px; border-radius:50%; pointer-events:none; z-index:2;
+    background:radial-gradient(circle, rgba(59,130,246,0.10), transparent 70%);
+    transform:translate(-50%,-50%); transition:opacity .3s; }
+
+  /* ---------- LAYOUT ---------- */
+  .app{ position:relative; z-index:3; max-width:1400px; margin:0 auto; padding:0 32px 120px; }
+  @media(max-width:900px){ .app{ padding:0 18px 100px; } }
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{ position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+    background:rgba(5,5,5,0.55); border-bottom:1px solid var(--border); }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:20px; letter-spacing:-0.02em; }
+  .brand .mark{ width:32px; height:32px; border-radius:9px; background:var(--grad-primary); position:relative; box-shadow:0 0 24px rgba(59,130,246,.55); }
+  .brand .mark::after{ content:''; position:absolute; inset:2px; border-radius:7px; background:linear-gradient(160deg, rgba(255,255,255,.55), transparent 55%); }
+
+  .tabs{ display:flex; gap:4px; background:var(--card); border:1px solid var(--border); padding:5px; border-radius:100px; backdrop-filter:blur(var(--blur)); }
+  .tab{ padding:9px 18px; border-radius:100px; font-size:13.5px; font-weight:600; color:var(--text-dim); cursor:pointer; transition:all .35s cubic-bezier(.2,.9,.3,1); white-space:nowrap; user-select:none; position:relative; }
+  .tab:hover{ color:var(--text); }
+  .tab.active{ color:#fff; background:var(--grad-primary); box-shadow:0 4px 20px rgba(59,130,246,.45); }
+  .topbar-actions{ display:flex; align-items:center; gap:14px; }
+  .icon-btn{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--card); border:1px solid var(--border); cursor:pointer; transition:.3s; }
+  .icon-btn:hover{ border-color:var(--border-strong); transform:translateY(-2px); }
+
+  @media(max-width:900px){ .tabs{ position:fixed; bottom:14px; left:14px; right:14px; overflow-x:auto; justify-content:flex-start; z-index:60; } .topbar{ padding:14px 18px; } }
+
+  /* ---------- GLASS CARD ---------- */
+  .glass{ position:relative; background:var(--card); border:1px solid var(--border); border-radius:var(--r-lg);
+    backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+    box-shadow:0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+    transition:transform .45s cubic-bezier(.2,.9,.3,1), border-color .35s, box-shadow .45s;
+    overflow:hidden; }
+  .glass::before{ content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(75deg, transparent, rgba(255,255,255,.09), transparent);
+    transform:skewX(-18deg); transition:left .8s ease; pointer-events:none; }
+  .glass:hover::before{ left:130%; }
+  .glass:hover{ border-color:var(--border-strong); transform:translateY(-4px); box-shadow:0 20px 48px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.05); }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .eyebrow{ display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent);
+    background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.25); padding:6px 14px; border-radius:100px; margin-bottom:18px; }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+  h1,h2,h3{ font-weight:800; letter-spacing:-0.03em; line-height:1.05; }
+  .section-title{ font-size:42px; margin-bottom:10px; }
+  .section-sub{ color:var(--text-dim); font-size:16px; max-width:560px; font-weight:500; }
+  @media(max-width:700px){ .section-title{ font-size:30px; } }
+
+  /* ---------- BUTTONS ---------- */
+  .btn{ position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-family:inherit; font-weight:700; font-size:14.5px; letter-spacing:-.01em; border:none; cursor:pointer;
+    padding:14px 26px; border-radius:14px; color:#fff; overflow:hidden; isolation:isolate;
+    transition:transform .3s cubic-bezier(.2,.9,.3,1), box-shadow .3s; }
+  .btn-primary{ background:var(--grad-primary); box-shadow:0 8px 24px rgba(59,130,246,.35); }
+  .btn-primary::before{ content:''; position:absolute; inset:0; border-radius:inherit; padding:1px;
+    background:linear-gradient(135deg, rgba(255,255,255,.6), transparent 40%, transparent 60%, rgba(255,255,255,.3));
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; }
+  .btn-primary::after{ content:''; position:absolute; top:-50%; left:-30%; width:40%; height:220%;
+    background:linear-gradient(75deg, transparent, rgba(255,255,255,.55), transparent);
+    transform:skewX(-20deg) translateX(-20px); z-index:1; opacity:0; }
+  .btn:hover.btn-primary::after{ animation:sweep 1s ease forwards; }
+  @keyframes sweep{ 0%{ opacity:0; transform:skewX(-20deg) translateX(-40px);} 30%{opacity:1;} 100%{ opacity:0; transform:skewX(-20deg) translateX(340px);} }
+  .btn-primary:hover{ transform:translateY(-3px) scale(1.045); box-shadow:0 14px 36px rgba(59,130,246,.55), 0 0 40px rgba(124,58,237,.3); }
+  .btn-primary:active{ transform:translateY(-1px) scale(1.0); }
+  .btn-ghost{ background:var(--card); border:1px solid var(--border); color:var(--text); }
+  .btn-ghost:hover{ border-color:var(--border-strong); background:var(--card-hover); transform:translateY(-2px); }
+  .btn-hot{ background:var(--grad-hot); box-shadow:0 8px 24px rgba(236,72,153,.35); }
+  .btn-hot:hover{ transform:translateY(-3px) scale(1.045); box-shadow:0 14px 36px rgba(236,72,153,.5); }
+  .btn-sm{ padding:9px 16px; font-size:12.5px; border-radius:10px; }
+  .btn-icon{ width:44px; height:44px; padding:0; border-radius:14px; }
+  .ripple{ position:absolute; border-radius:50%; background:rgba(255,255,255,.5); transform:scale(0); animation:rip .6s ease-out; pointer-events:none; }
+  @keyframes rip{ to{ transform:scale(3); opacity:0; } }
+
+  /* ---------- HERO ---------- */
+  .hero{ padding:90px 0 60px; display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; }
+  @media(max-width:960px){ .hero{ grid-template-columns:1fr; padding:50px 0 30px; } }
+  .hero h1{ font-size:68px; margin-bottom:22px; }
+  .hero h1 .grad{ background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent; background-size:200% auto; animation:shine 6s linear infinite; }
+  @keyframes shine{ to{ background-position:200% center; } }
+  @media(max-width:700px){ .hero h1{ font-size:38px; } }
+  .hero p.lead{ font-size:17px; color:var(--text-dim); max-width:480px; margin-bottom:34px; font-weight:500; line-height:1.6; }
+  .hero-actions{ display:flex; gap:14px; margin-bottom:44px; flex-wrap:wrap; }
+  .stat-row{ display:flex; gap:36px; flex-wrap:wrap; }
+  .stat{ }
+  .stat .num{ font-size:28px; font-weight:800; }
+  .stat .lbl{ font-size:12.5px; color:var(--text-faint); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+
+  .hero-visual{ position:relative; height:460px; display:flex; align-items:center; justify-content:center; }
+  .shoe-stage{ position:relative; width:100%; height:100%; border-radius:32px; background:linear-gradient(160deg, rgba(59,130,246,.14), rgba(124,58,237,.10) 50%, rgba(6,182,212,.10)); border:1px solid var(--border); overflow:hidden; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(var(--blur)); }
+  .shoe-stage .ring{ position:absolute; width:340px; height:340px; border-radius:50%; border:1px dashed rgba(255,255,255,.12); animation:spin 30s linear infinite; }
+  .shoe-stage .ring2{ position:absolute; width:260px; height:260px; border-radius:50%; border:1px dashed rgba(255,255,255,.08); animation:spin 22s linear infinite reverse; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .shoe-emoji{ font-size:180px; filter:drop-shadow(0 30px 60px rgba(59,130,246,.5)); animation:hover-shoe 4s ease-in-out infinite; transform:rotate(-8deg); }
+  @keyframes hover-shoe{ 0%,100%{ transform:translateY(0) rotate(-8deg);} 50%{ transform:translateY(-18px) rotate(-4deg);} }
+  .float-chip{ position:absolute; padding:10px 14px; border-radius:14px; display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; }
+  .fc1{ top:14%; left:8%; animation:chipfloat 5s ease-in-out infinite; }
+  .fc2{ bottom:16%; right:6%; animation:chipfloat 6s ease-in-out infinite 1s; }
+  @keyframes chipfloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-14px);} }
+
+  /* particles */
+  .particles{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .particles i{ position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; opacity:.5; animation:drift linear infinite; }
+  @keyframes drift{ from{ transform:translateY(0); opacity:0;} 10%{opacity:.6;} 90%{opacity:.4;} to{ transform:translateY(-420px); opacity:0;} }
+
+  /* ---------- LOGO / MARQUEE ---------- */
+  .marquee-wrap{ overflow:hidden; padding:20px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .marquee{ display:flex; gap:60px; width:max-content; animation:scroll 22s linear infinite; opacity:.5; font-weight:700; letter-spacing:.04em; }
+  @keyframes scroll{ to{ transform:translateX(-50%); } }
+
+  /* ---------- GRID SECTIONS ---------- */
+  .section{ padding:80px 0; }
+  .section-head-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; gap:20px; flex-wrap:wrap; }
+
+  .grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+  .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media(max-width:1100px){ .grid-4{ grid-template-columns:repeat(2,1fr);} .grid-3{ grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:600px){ .grid-4{ grid-template-columns:1fr;} .grid-3{ grid-template-columns:1fr;} }
+
+  /* ---------- PRODUCT CARD ---------- */
+  .pcard{ padding:0; cursor:pointer; }
+  .pcard-media{ position:relative; height:220px; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), transparent 65%); overflow:hidden; }
+  .pcard-media .emoji{ font-size:96px; transition:transform .5s cubic-bezier(.2,.9,.3,1); filter:drop-shadow(0 18px 26px rgba(0,0,0,.5)); }
+  .pcard:hover .pcard-media .emoji{ transform:scale(1.12) rotate(-6deg) translateY(-6px); }
+  .badge{ position:absolute; top:12px; left:12px; font-size:10.5px; font-weight:800; padding:5px 10px; border-radius:100px; text-transform:uppercase; letter-spacing:.04em; z-index:2; }
+  .badge-ai{ background:var(--grad-accent); color:#001019; }
+  .badge-sale{ background:var(--grad-hot); color:#fff; top:12px; left:auto; right:12px; }
+  .wish-btn{ position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.4); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; z-index:2; transition:.3s; }
+  .wish-btn:hover{ background:rgba(236,72,153,.25); border-color:var(--accent2); transform:scale(1.1); }
+  .badge-sale ~ .wish-btn{ top:48px; }
+  .pcard-body{ padding:18px 18px 20px; }
+  .pcard-body .cat{ font-size:11px; color:var(--text-faint); font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+  .pcard-body .name{ font-size:16px; font-weight:700; margin-bottom:8px; }
+  .stars{ display:flex; align-items:center; gap:5px; font-size:12px; color:var(--warning); margin-bottom:10px; }
+  .stars span{ color:var(--text-faint); font-weight:600; }
+  .price-row{ display:flex; align-items:center; justify-content:space-between; }
+  .price{ font-size:19px; font-weight:800; }
+  .price .old{ font-size:13px; color:var(--text-faint); text-decoration:line-through; font-weight:600; margin-left:6px; }
+  .stock-dot{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--success); font-weight:700; }
+  .stock-dot i{ width:6px; height:6px; border-radius:50%; background:var(--success); box-shadow:0 0 8px var(--success); }
+  .quick-add{ margin-top:14px; width:100%; padding:11px; border-radius:12px; }
+
+  /* ---------- INPUTS ---------- */
+  .field{ position:relative; margin-bottom:26px; }
+  .field input, .field select{ width:100%; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 16px 8px; font-family:inherit; font-size:14.5px; color:var(--text); outline:none; transition:.3s; backdrop-filter:blur(var(--blur)); }
+  .field label{ position:absolute; left:16px; top:16px; font-size:14.5px; color:var(--text-faint); pointer-events:none; transition:.25s cubic-bezier(.2,.9,.3,1); font-weight:500; }
+  .field input:focus, .field input:not(:placeholder-shown){ }
+  .field input:focus ~ label, .field input:not(:placeholder-shown) ~ label{ top:7px; font-size:10.5px; color:var(--accent); font-weight:700; letter-spacing:.03em; text-transform:uppercase; }
+  .field input:focus{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(59,130,246,.15), 0 0 24px rgba(59,130,246,.15); }
+  .field .underline{ position:absolute; bottom:0; left:16px; right:16px; height:2px; background:var(--grad-primary); transform:scaleX(0); transform-origin:left; transition:transform .4s cubic-bezier(.2,.9,.3,1); border-radius:2px; }
+  .field input:focus ~ .underline{ transform:scaleX(1); }
+  .field .icon{ position:absolute; right:16px; top:16px; opacity:.5; }
+
+  /* ---------- DASHBOARD ---------- */
+  .dash{ display:grid; grid-template-columns:250px 1fr; gap:24px; }
+  @media(max-width:900px){ .dash{ grid-template-columns:1fr; } }
+  .side{ padding:20px 14px; height:fit-content; position:sticky; top:90px; }
+  .side-item{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; font-weight:600; font-size:14px; color:var(--text-dim); cursor:pointer; transition:.3s; margin-bottom:4px; }
+  .side-item:hover{ background:var(--card-hover); color:var(--text); }
+  .side-item.active{ background:linear-gradient(90deg, rgba(59,130,246,.18), rgba(124,58,237,.06)); color:#fff; border:1px solid rgba(59,130,246,.3); }
+  .side-item .dot-ind{ width:6px; height:6px; border-radius:50%; background:var(--danger); box-shadow:0 0 8px var(--danger); margin-left:auto; }
+
+  .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:24px; }
+  @media(max-width:900px){ .kpi-row{ grid-template-columns:repeat(2,1fr);} }
+  .kpi{ padding:22px; }
+  .kpi .top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; }
+  .kpi .ico{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; }
+  .kpi .delta{ font-size:12px; font-weight:800; padding:3px 8px; border-radius:100px; }
+  .delta-up{ color:var(--success); background:rgba(16,185,129,.12); }
+  .delta-down{ color:var(--danger); background:rgba(244,63,94,.12); }
+  .kpi .val{ font-size:30px; font-weight:800; margin-bottom:4px; }
+  .kpi .lbl{ font-size:12.5px; color:var(--text-faint); font-weight:600; }
+
+  .panel{ padding:24px; margin-bottom:22px; }
+  .panel-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .panel-head h3{ font-size:17px; }
+
+  .chart-bars{ display:flex; align-items:flex-end; gap:10px; height:180px; }
+  .chart-bars .bar{ flex:1; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--primary), rgba(124,58,237,.5)); position:relative; transition:transform .35s; transform-origin:bottom; animation:growbar 1s cubic-bezier(.2,.9,.3,1) both; }
+  .chart-bars .bar:hover{ transform:scaleY(1.03); filter:brightness(1.2); }
+  @keyframes growbar{ from{ transform:scaleY(0);} }
+
+  .heatmap{ display:grid; grid-template-columns:repeat(12,1fr); gap:5px; }
+  .heatmap div{ aspect-ratio:1; border-radius:4px; transition:.3s; }
+  .heatmap div:hover{ transform:scale(1.3); box-shadow:0 0 14px rgba(59,130,246,.6); z-index:2; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th{ text-align:left; padding:10px 12px; color:var(--text-faint); font-weight:700; text-transform:uppercase; font-size:11px; letter-spacing:.05em; border-bottom:1px solid var(--border); }
+  td{ padding:14px 12px; border-bottom:1px solid rgba(255,255,255,.05); font-weight:600; }
+  tr.trow{ transition:.25s; }
+  tr.trow:hover{ background:rgba(255,255,255,.04); }
+  .status-pill{ font-size:11px; font-weight:800; padding:4px 10px; border-radius:100px; display:inline-block; }
+  .st-done{ background:rgba(16,185,129,.14); color:var(--success); }
+  .st-pending{ background:rgba(245,158,11,.14); color:var(--warning); }
+  .st-ship{ background:rgba(59,130,246,.14); color:var(--primary); }
+
+  .live-feed-item{ display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+  .live-dot{ width:8px; height:8px; border-radius:50%; background:var(--success); box-shadow:0 0 10px var(--success); flex-shrink:0; animation:pulse 1.8s infinite; }
+
+  /* fade sections in on scroll */
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .8s cubic-bezier(.2,.9,.3,1), transform .8s cubic-bezier(.2,.9,.3,1); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation:fadein .5s ease; }
+  @keyframes fadein{ from{ opacity:0; transform:translateY(12px);} to{ opacity:1; transform:translateY(0);} }
+
+  footer{ margin-top:100px; padding-top:50px; border-top:1px solid var(--border); text-align:center; color:var(--text-faint); font-size:13px; font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
+<div class="noise"></div>
+<div class="cursor-glow" id="glow"></div>
+
+<div class="topbar">
+  <div class="brand"><span class="mark"></span> SoleCart</div>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-screen="landing">Landing</div>
+    <div class="tab" data-screen="product">Product</div>
+    <div class="tab" data-screen="components">Components</div>
+    <div class="tab" data-screen="admin">Admin</div>
+    <div class="tab" data-screen="inventory">Inventory</div>
+  </div>
+  <div class="topbar-actions">
+    <div class="icon-btn">🔍</div>
+    <div class="icon-btn">🛒</div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ================= LANDING ================= -->
+  <div class="screen active" id="landing">
+    <div class="hero">
+      <div class="reveal">
+        <div class="eyebrow"><span class="dot"></span> AI-Powered Footwear Platform</div>
+        <h1>Step into <span class="grad">intelligent</span><br/>footwear.</h1>
+        <p class="lead">SoleCart pairs a luxury shopping experience with real-time inventory intelligence — recommendations that learn, stock that predicts itself, and checkout that feels effortless.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="ripple(event)">Shop the Drop →</button>
+          <button class="btn btn-ghost" onclick="ripple(event)">Explore AI Picks</button>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num" data-count="248">0</div><div class="lbl">Live Styles</div></div>
+          <div class="stat"><div class="num" data-count="97">0</div><div class="lbl">Match Accuracy %</div></div>
+          <div class="stat"><div class="num" data-count="18">0</div><div class="lbl">Min Avg Delivery Prep</div></div>
+        </div>
+      </div>
+      <div class="hero-visual reveal">
+        <div class="shoe-stage">
+          <div class="particles" id="particles"></div>
+          <div class="ring"></div><div class="ring2"></div>
+          <div class="shoe-emoji">👟</div>
+          <div class="glass float-chip fc1"><span>✨</span> AI Match 98%</div>
+          <div class="glass float-chip fc2"><span>📦</span> 4 left in stock</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marquee-wrap reveal">
+      <div class="marquee">
+        <span>AEROFLUX</span><span>NIMBUS RUN</span><span>URBAN FORGE</span><span>VOLT LAB</span><span>STRIDE.AI</span><span>MONO SOLE</span>
+        <span>AEROFLUX</span><span>NIMBUS RUN</span><span>URBAN FORGE</span><span>VOLT LAB</span><span>STRIDE.AI</span><span>MONO SOLE</span>
+      </div>
+    </div>
+
+    <div class="section reveal">
+      <div class="section-head-row">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Curated for you</div>
+          <h2 class="section-title">Trending right now</h2>
+          <p class="section-sub">Ranked live by velocity, wishlist adds, and your browsing signal.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="ripple(event)">View all →</button>
+      </div>
+      <div class="grid-4" id="productGrid"></div>
+    </div>
+
+    <div class="section reveal">
+      <div class="section-head-row">
+        <div>
+          <div class="eyebrow" style="color:var(--accent2); border-color:rgba(236,72,153,.25); background:rgba(236,72,153,.08);"><span class="dot" style="background:var(--accent2); box-shadow:0 0 10px var(--accent2);"></span> Smart Suggestions</div>
+          <h2 class="section-title">Recommended by SoleCart AI</h2>
+          <p class="section-sub">Built from your recent views, fit profile, and 40M+ purchase patterns.</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="glass" style="padding:24px;">
+          <div style="font-size:34px; margin-bottom:14px;">🧠</div>
+          <h3 style="font-size:17px; margin-bottom:8px;">Because you viewed Aeroflux Runner</h3>
+          <p style="color:var(--text-dim); font-size:13.5px; line-height:1.6;">These runners share the same cushion index and arch profile — 94% predicted comfort match.</p>
+        </div>
+        <div class="glass" style="padding:24px;">
+          <div style="font-size:34px; margin-bottom:14px;">🔥</div>
+          <h3 style="font-size:17px; margin-bottom:8px;">Frequently bought together</h3>
+          <p style="color:var(--text-dim); font-size:13.5px; line-height:1.6;">Pair with Volt Lab performance socks — bought together 61% of the time this month.</p>
+        </div>
+        <div class="glass" style="padding:24px;">
+          <div style="font-size:34px; margin-bottom:14px;">📈</div>
+          <h3 style="font-size:17px; margin-bottom:8px;">Restock prediction</h3>
+          <p style="color:var(--text-dim); font-size:13.5px; line-height:1.6;">Your size is trending toward sell-out in ~36 hours based on current velocity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section reveal">
+      <div class="glass" style="padding:50px; text-align:center;">
+        <h2 class="section-title" style="margin-bottom:10px;">Get early access to drops</h2>
+        <p class="section-sub" style="margin:0 auto 30px;">Join 120,000+ members getting AI-curated releases before they go public.</p>
+        <div style="display:flex; gap:12px; max-width:420px; margin:0 auto; flex-wrap:wrap; justify-content:center;">
+          <input placeholder="you@email.com" style="flex:1; min-width:220px; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 16px; color:#fff; font-family:inherit; outline:none;"/>
+          <button class="btn btn-primary" onclick="ripple(event)">Notify Me</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PRODUCT DETAIL ================= -->
+  <div class="screen" id="product">
+    <div class="section" style="padding-top:40px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:44px;" id="pdGrid">
+        <div class="glass reveal in" style="height:520px; display:flex; align-items:center; justify-content:center; position:relative;">
+          <div class="badge badge-ai" style="top:20px; left:20px;">AI Recommended</div>
+          <div class="shoe-emoji" style="font-size:220px;">👟</div>
+        </div>
+        <div class="reveal in">
+          <div class="eyebrow">Running · Men's</div>
+          <h1 style="font-size:36px; margin-bottom:10px;">Aeroflux Runner X2</h1>
+          <div class="stars" style="margin-bottom:18px;">★★★★★ <span>4.9 (2,384 reviews)</span></div>
+          <div style="display:flex; align-items:center; gap:14px; margin-bottom:24px;">
+            <div class="price" style="font-size:32px;">$189<span class="old">$240</span></div>
+            <div class="badge badge-sale" style="position:static;">-21%</div>
+          </div>
+          <p style="color:var(--text-dim); line-height:1.7; margin-bottom:28px; font-weight:500;">Engineered with adaptive foam cells that respond to stride pressure in real time. Knit upper breathes on demand; carbon plate returns energy on push-off.</p>
+
+          <div style="margin-bottom:26px;">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); margin-bottom:10px;">Size</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;" id="sizeRow"></div>
+          </div>
+
+          <div style="display:flex; gap:14px; margin-bottom:30px;">
+            <button class="btn btn-primary" style="flex:1;" onclick="ripple(event)">Add to Cart — $189</button>
+            <button class="btn btn-icon btn-ghost" onclick="ripple(event)">♡</button>
+          </div>
+
+          <div class="glass" style="padding:16px 18px; display:flex; align-items:center; gap:12px;">
+            <div class="stock-dot"><i></i> In stock</div>
+            <span style="color:var(--text-faint); font-size:13px;">·</span>
+            <span style="font-size:13px; color:var(--text-dim); font-weight:600;">Only 6 left in size 9 — 14 people viewing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head-row">
+          <div><div class="eyebrow" style="color:var(--accent2); border-color:rgba(236,72,153,.25); background:rgba(236,72,153,.08);"><span class="dot" style="background:var(--accent2); box-shadow:0 0 10px var(--accent2);"></span> Complete the fit</div>
+          <h2 class="section-title">Frequently bought together</h2></div>
+        </div>
+        <div class="grid-4" id="fbtGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= COMPONENTS ================= -->
+  <div class="screen" id="components">
+    <div class="section" style="padding-top:40px;">
+      <div class="eyebrow"><span class="dot"></span> Component Library</div>
+      <h2 class="section-title">Buttons, inputs & primitives</h2>
+      <p class="section-sub" style="margin-bottom:40px;">Every interactive element carries the same glass material, mirror reflection, and glow-on-hover language.</p>
+
+      <div class="glass" style="padding:32px; margin-bottom:24px;">
+        <h3 style="margin-bottom:20px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;">Buttons</h3>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+          <button class="btn btn-primary" onclick="ripple(event)">Primary Action</button>
+          <button class="btn btn-hot" onclick="ripple(event)">Hot / Accent</button>
+          <button class="btn btn-ghost" onclick="ripple(event)">Ghost</button>
+          <button class="btn btn-primary btn-sm" onclick="ripple(event)">Small</button>
+          <button class="btn btn-icon btn-primary" onclick="ripple(event)">→</button>
+          <button class="btn btn-ghost" disabled style="opacity:.4; cursor:not-allowed;">Disabled</button>
+        </div>
+      </div>
+
+      <div class="glass" style="padding:32px; margin-bottom:24px;">
+        <h3 style="margin-bottom:24px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;">Inputs</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+          <div class="field"><input type="text" placeholder=" "/><label>Email address</label><div class="underline"></div><span class="icon">✉</span></div>
+          <div class="field"><input type="text" placeholder=" "/><label>Shipping ZIP code</label><div class="underline"></div><span class="icon">📍</span></div>
+          <div class="field"><input type="text" placeholder=" "/><label>Promo code</label><div class="underline"></div><span class="icon">%</span></div>
+          <div class="field"><input type="text" placeholder=" "/><label>Search shoes, brands...</label><div class="underline"></div><span class="icon">🔍</span></div>
+        </div>
+      </div>
+
+      <div class="glass" style="padding:32px;">
+        <h3 style="margin-bottom:20px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;">Badges & status</h3>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <span class="status-pill st-done">Delivered</span>
+          <span class="status-pill st-pending">Pending</span>
+          <span class="status-pill st-ship">Shipped</span>
+          <span class="badge badge-ai" style="position:static; display:inline-block;">AI Recommended</span>
+          <span class="badge badge-sale" style="position:static; display:inline-block;">-30% Sale</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN ================= -->
+  <div class="screen" id="admin">
+    <div class="section" style="padding-top:36px;">
+      <div class="dash">
+        <div class="glass side">
+          <div class="side-item active">📊 Overview</div>
+          <div class="side-item">🛍️ Orders <span class="dot-ind"></span></div>
+          <div class="side-item">👟 Products</div>
+          <div class="side-item">📦 Inventory</div>
+          <div class="side-item">🧠 AI Insights</div>
+          <div class="side-item">👥 Customers</div>
+          <div class="side-item">⚙️ Automations</div>
+          <div class="side-item">🧾 Settings</div>
+        </div>
+        <div>
+          <div class="kpi-row">
+            <div class="glass kpi">
+              <div class="top"><div class="ico" style="background:rgba(59,130,246,.15); color:var(--primary);">$</div><div class="delta delta-up">+12.4%</div></div>
+              <div class="val">$482,910</div><div class="lbl">Revenue (30d)</div>
+            </div>
+            <div class="glass kpi">
+              <div class="top"><div class="ico" style="background:rgba(124,58,237,.15); color:var(--secondary);">📦</div><div class="delta delta-up">+8.1%</div></div>
+              <div class="val">3,214</div><div class="lbl">Orders</div>
+            </div>
+            <div class="glass kpi">
+              <div class="top"><div class="ico" style="background:rgba(236,72,153,.15); color:var(--accent2);">🧠</div><div class="delta delta-up">+3.2%</div></div>
+              <div class="val">97.2%</div><div class="lbl">AI Match Accuracy</div>
+            </div>
+            <div class="glass kpi">
+              <div class="top"><div class="ico" style="background:rgba(244,63,94,.15); color:var(--danger);">⚠</div><div class="delta delta-down">-4</div></div>
+              <div class="val">14</div><div class="lbl">Low Stock SKUs</div>
+            </div>
+          </div>
+
+          <div class="glass panel">
+            <div class="panel-head"><h3>Revenue trend</h3><div class="tabs" style="padding:3px;"><div class="tab active" style="padding:6px 12px; font-size:12px;">30D</div><div class="tab" style="padding:6px 12px; font-size:12px;">90D</div><div class="tab" style="padding:6px 12px; font-size:12px;">1Y</div></div></div>
+            <div class="chart-bars" id="revBars"></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:22px;">
+            <div class="glass panel" style="margin-bottom:0;">
+              <div class="panel-head"><h3>Recent orders</h3><button class="btn btn-ghost btn-sm" onclick="ripple(event)">View all</button></div>
+              <table>
+                <thead><tr><th>Order</th><th>Customer</th><th>Item</th><th>Status</th><th>Total</th></tr></thead>
+                <tbody id="ordersBody"></tbody>
+              </table>
+            </div>
+            <div class="glass panel" style="margin-bottom:0;">
+              <div class="panel-head"><h3>Live activity</h3></div>
+              <div id="liveFeed"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INVENTORY ================= -->
+  <div class="screen" id="inventory">
+    <div class="section" style="padding-top:36px;">
+      <div class="section-head-row">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Inventory Intelligence</div>
+          <h2 class="section-title">Stock health</h2>
+          <p class="section-sub">Heatmap of sell-through velocity across sizes and styles, updated every 4 minutes.</p>
+        </div>
+        <button class="btn btn-ghost" onclick="ripple(event)">📷 Scan Barcode</button>
+      </div>
+
+      <div class="glass panel">
+        <div class="panel-head"><h3>Low stock alerts</h3><span class="status-pill st-pending">14 alerts</span></div>
+        <table>
+          <thead><tr><th>SKU</th><th>Style</th><th>Size</th><th>Remaining</th><th>Velocity</th><th></th></tr></thead>
+          <tbody id="lowStockBody"></tbody>
+        </table>
+      </div>
+
+      <div class="glass panel">
+        <div class="panel-head"><h3>Sell-through heatmap</h3></div>
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>SoleCart Design System — built for Awwwards-grade production. © 2026</footer>
+
+<script>
+// ---------------- tabs ----------------
+document.querySelectorAll('.tab[data-screen]').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab[data-screen]').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(t.dataset.screen).classList.add('active');
+    document.querySelectorAll('.reveal').forEach(r=>r.classList.add('in'));
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+// ---------------- cursor glow ----------------
+const glow = document.getElementById('glow');
+document.addEventListener('mousemove', e=>{
+  glow.style.left = e.clientX+'px';
+  glow.style.top = e.clientY+'px';
+});
+
+// ---------------- ripple ----------------
+function ripple(e){
+  const btn = e.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  const circle = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  circle.className='ripple';
+  circle.style.width = circle.style.height = size+'px';
+  circle.style.left = (e.clientX-rect.left-size/2)+'px';
+  circle.style.top = (e.clientY-rect.top-size/2)+'px';
+  btn.style.position='relative';
+  btn.appendChild(circle);
+  setTimeout(()=>circle.remove(),650);
+}
+
+// ---------------- particles ----------------
+const pWrap = document.getElementById('particles');
+for(let i=0;i<24;i++){
+  const s = document.createElement('i');
+  s.style.left = Math.random()*100+'%';
+  s.style.bottom = '0px';
+  s.style.animationDuration = (5+Math.random()*8)+'s';
+  s.style.animationDelay = (Math.random()*8)+'s';
+  pWrap.appendChild(s);
+}
+
+// ---------------- reveal on scroll ----------------
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in'); });
+},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// ---------------- animated counters ----------------
+const counted = new WeakSet();
+const cio = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting && !counted.has(en.target)){
+      counted.add(en.target);
+      const target = +en.target.dataset.count;
+      let cur = 0; const step = Math.max(1, target/40);
+      const t = setInterval(()=>{ cur+=step; if(cur>=target){cur=target; clearInterval(t);} en.target.textContent = Math.round(cur); },30);
+    }
+  });
+},{threshold:0.4});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+// ---------------- data ----------------
+const products = [
+  {emoji:'👟', name:'Aeroflux Runner X2', cat:'Running', price:189, old:240, rating:4.9, reviews:2384, stock:true, ai:true},
+  {emoji:'👞', name:'Urban Forge Chelsea', cat:'Casual', price:159, old:null, rating:4.7, reviews:842, stock:true, ai:false},
+  {emoji:'🥾', name:'Nimbus Trail Pro', cat:'Trail', price:214, old:260, rating:4.8, reviews:1210, stock:true, ai:true},
+  {emoji:'👟', name:'Volt Lab Sprint', cat:'Performance', price:175, old:null, rating:4.6, reviews:530, stock:false, ai:false},
+];
+const grid = document.getElementById('productGrid');
+products.forEach(p=>{
+  const el = document.createElement('div');
+  el.className='glass pcard';
+  el.innerHTML = `
+    <div class="pcard-media">
+      ${p.ai?'<div class="badge badge-ai">AI Match</div>':''}
+      ${p.old?'<div class="badge badge-sale">-'+Math.round((1-p.price/p.old)*100)+'%</div>':''}
+      <div class="wish-btn">♡</div>
+      <div class="emoji">${p.emoji}</div>
+    </div>
+    <div class="pcard-body">
+      <div class="cat">${p.cat}</div>
+      <div class="name">${p.name}</div>
+      <div class="stars">★★★★★ <span>${p.rating} (${p.reviews})</span></div>
+      <div class="price-row">
+        <div class="price">$${p.price}${p.old?'<span class="old">$'+p.old+'</span>':''}</div>
+        <div class="stock-dot" style="${p.stock?'':'color:var(--danger)'}"><i style="${p.stock?'':'background:var(--danger); box-shadow:0 0 8px var(--danger);'}"></i>${p.stock?'In stock':'Low stock'}</div>
+      </div>
+      <button class="btn btn-primary quick-add" onclick="ripple(event)">Quick Add</button>
+    </div>`;
+  grid.appendChild(el);
+});
+
+// sizes
+const sizeRow = document.getElementById('sizeRow');
+[7,8,9,10,11,12].forEach((s,i)=>{
+  const b = document.createElement('div');
+  b.textContent = s;
+  b.style.cssText = `width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; cursor:pointer; border:1px solid var(--border); background:var(--card); transition:.25s;`;
+  if(i===2){ b.style.background='var(--grad-primary)'; b.style.borderColor='transparent'; b.style.boxShadow='0 6px 18px rgba(59,130,246,.4)'; }
+  b.onmouseenter=()=>{ if(i!==2){ b.style.borderColor='var(--border-strong)'; b.style.transform='translateY(-2px)'; } };
+  b.onmouseleave=()=>{ if(i!==2){ b.style.borderColor='var(--border)'; b.style.transform='translateY(0)'; } };
+  sizeRow.appendChild(b);
+});
+
+// frequently bought together
+const fbt = [{emoji:'🧦',name:'Volt Lab Crew Socks',price:18},{emoji:'👟',name:'Nimbus Trail Pro',price:214},{emoji:'🧴',name:'Sole Care Cleaner Kit',price:24},{emoji:'👜',name:'Aeroflux Shoe Bag',price:32}];
+const fbtGrid = document.getElementById('fbtGrid');
+fbt.forEach(p=>{
+  const el = document.createElement('div');
+  el.className='glass pcard';
+  el.innerHTML = `<div class="pcard-media"><div class="emoji" style="font-size:70px;">${p.emoji}</div></div><div class="pcard-body"><div class="name">${p.name}</div><div class="price-row"><div class="price">$${p.price}</div></div></div>`;
+  fbtGrid.appendChild(el);
+});
+
+// admin orders
+const orders = [
+  {id:'#8241', cust:'Maya Chen', item:'Aeroflux Runner X2', status:'done', total:'$189'},
+  {id:'#8240', cust:'Diego Ruiz', item:'Nimbus Trail Pro', status:'ship', total:'$214'},
+  {id:'#8239', cust:'Amara Obi', item:'Urban Forge Chelsea', status:'pending', total:'$159'},
+  {id:'#8238', cust:'Leo Park', item:'Volt Lab Sprint', status:'done', total:'$175'},
+];
+const stMap = {done:['Delivered','st-done'], ship:['Shipped','st-ship'], pending:['Processing','st-pending']};
+document.getElementById('ordersBody').innerHTML = orders.map(o=>`
+  <tr class="trow"><td>${o.id}</td><td>${o.cust}</td><td>${o.item}</td><td><span class="status-pill ${stMap[o.status][1]}">${stMap[o.status][0]}</span></td><td>${o.total}</td></tr>
+`).join('');
+
+// live feed
+const feed = ['New order from Maya C. — $189','AI flagged restock for Nimbus Trail Pro','Wishlist add: Volt Lab Sprint','Return initiated — Order #8231','New 5★ review on Aeroflux Runner X2'];
+document.getElementById('liveFeed').innerHTML = feed.map(f=>`<div class="live-feed-item"><div class="live-dot"></div><div style="font-size:13px; font-weight:600; color:var(--text-dim);">${f}</div></div>`).join('');
+
+// revenue bars
+const bars = [40,55,48,70,62,80,74,90,85,95,88,100];
+document.getElementById('revBars').innerHTML = bars.map((h,i)=>`<div class="bar" style="height:${h}%; animation-delay:${i*0.05}s;"></div>`).join('');
+
+// low stock table
+const low = [
+  {sku:'AFX-902-9', style:'Aeroflux Runner X2', size:'9', rem:3, vel:'High'},
+  {sku:'NTP-114-11', style:'Nimbus Trail Pro', size:'11', rem:2, vel:'High'},
+  {sku:'UFC-330-8', style:'Urban Forge Chelsea', size:'8', rem:5, vel:'Med'},
+];
+document.getElementById('lowStockBody').innerHTML = low.map(l=>`
+  <tr class="trow"><td>${l.sku}</td><td>${l.style}</td><td>${l.size}</td><td style="color:var(--danger); font-weight:800;">${l.rem}</td><td>${l.vel}</td><td><button class="btn btn-ghost btn-sm" onclick="ripple(event)">Reorder</button></td></tr>
+`).join('');
+
+// heatmap
+const hm = document.getElementById('heatmap');
+for(let i=0;i<96;i++){
+  const v = Math.random();
+  const d = document.createElement('div');
+  const color = v>0.75?'rgba(16,185,129,.8)': v>0.5?'rgba(59,130,246,.7)': v>0.3?'rgba(245,158,11,.6)':'rgba(244,63,94,.45)';
+  d.style.background = color;
+  hm.appendChild(d);
+}
+</script>
+</body>
+</html>

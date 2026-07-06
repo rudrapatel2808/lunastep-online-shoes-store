@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LunaStep — Design System</title>
+  <meta name="description" content="LunaStep design system demo with glassmorphism, AI-powered product UI, admin dashboard, and inventory explorer." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
+  <div class="noise"></div>
+  <div class="cursor-glow" id="glow"></div>
+
+  <div class="topbar">
+    <div class="brand"><span class="mark"></span> LunaStep</div>
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-screen="landing">Landing</div>
+      <div class="tab" data-screen="product">Product</div>
+      <div class="tab" data-screen="components">Components</div>
+      <div class="tab" data-screen="admin">Admin</div>
+      <div class="tab" data-screen="inventory">Inventory</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="icon-btn">🔍</div>
+      <div class="icon-btn">🛒</div>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="screen active" id="landing">
+      <div class="hero">
+        <div class="reveal">
+          <div class="eyebrow"><span class="dot"></span> AI-Powered Footwear Platform</div>
+          <h1>Step into <span class="grad">intelligent</span><br/>footwear.</h1>
+          <p class="lead">LunaStep pairs a luxury shopping experience with real-time inventory intelligence — recommendations that learn, stock that predicts itself, and checkout that feels effortless.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="ripple(event)">Shop the Drop →</button>
+            <button class="btn btn-ghost" onclick="ripple(event)">Explore AI Picks</button>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><div class="num" data-count="248">0</div><div class="lbl">Live Styles</div></div>
+            <div class="stat"><div class="num" data-count="97">0</div><div class="lbl">Match Accuracy %</div></div>
+            <div class="stat"><div class="num" data-count="18">0</div><div class="lbl">Min Avg Delivery Prep</div></div>
+          </div>
+        </div>
+        <div class="hero-visual reveal">
+          <div class="shoe-stage">
+            <div class="particles" id="particles"></div>
+            <div class="ring"></div><div class="ring2"></div>
+            <div class="shoe-emoji">👟</div>
+            <div class="glass float-chip fc1"><span>✨</span> AI Match 98%</div>
+            <div class="glass float-chip fc2"><span>📦</span> 4 left in stock</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="marquee-wrap reveal">
+        <div class="marquee">
+          <span>AEROFLUX</span><span>NIMBUS RUN</span><span>URBAN FORGE</span><span>VOLT LAB</span><span>STRIDE.AI</span><span>MONO SOLE</span>
+          <span>AEROFLUX</span><span>NIMBUS RUN</span><span>URBAN FORGE</span><span>VOLT LAB</span><span>STRIDE.AI</span><span>MONO SOLE</span>
+        </div>
+      </div>
+
+      <div class="section reveal">
+        <div class="section-head-row">
+          <div>
+            <div class="eyebrow"><span class="dot"></span> Curated for you</div>
+            <h2 class="section-title">Trending right now</h2>
+            <p class="section-sub">Ranked live by velocity, wishlist adds, and your browsing signal.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="ripple(event)">View all →</button>
+        </div>
+        <div class="grid-4" id="productGrid"></div>
+      </div>
+
+      <div class="section reveal">
+        <div class="section-head-row">
+          <div>
+            <div class="eyebrow" style="color:var(--accent2); border-color:rgba(236,72,153,.25); background:rgba(236,72,153,.08);"><span class="dot" style="background:var(--accent2); box-shadow:0 0 10px var(--accent2);"></span> Smart Suggestions</div>
+            <h2 class="section-title">Recommended by LunaStep AI</h2>
+            <p class="section-sub">Built from your recent views, fit profile, and 40M+ purchase patterns.</p>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="glass" style="padding:24px;">
+            <div style="font-size:34px; margin-bottom:14px;">🧠</div>
+            <h3 style="font-size:17px; margin-bottom:8px;">Because you viewed Aeroflux Runner</h3>
+            <p style="color:var(--text-dim); font-size:13.5px; line-height:1.6;">These runners share the same cushion index and arch profile — 94% predicted comfort match.</p>
+          </div>
+          <div class="glass" style="padding:24px;">
+            <div style="font-size:34px; margin-bottom:14px;">🔥</div>
+            <h3 style="font-size:17px; margin-bottom:8px;">Frequently bought together</h3>
+            <p style="color:var(--text-dim); font-size:13.5px; line-height:1.6;">Pair with Volt Lab performance socks — bought together 61% of the time this month.</p>
+          </div>
+          <div class="glass" style="padding:24px;">
+            <div style="font-size:34px; margin-bottom:14px;">📈</div>
+            <h3 style="font-size:17px; margin-bottom:8px;">Restock prediction</h3>
+            <p style="color:var(--text-dim); font-size:13.5px; line-height:1.6;">Your size is trending toward sell-out in ~36 hours based on current velocity.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section reveal">
+        <div class="glass" style="padding:50px; text-align:center;">
+          <h2 class="section-title" style="margin-bottom:10px;">Get early access to drops</h2>
+          <p class="section-sub" style="margin:0 auto 30px;">Join 120,000+ members getting AI-curated releases before they go public.</p>
+          <div style="display:flex; gap:12px; max-width:420px; margin:0 auto; flex-wrap:wrap; justify-content:center;">
+            <input placeholder="you@email.com" style="flex:1; min-width:220px; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 16px; color:#fff; font-family:inherit; outline:none;" />
+            <button class="btn btn-primary" onclick="ripple(event)">Notify Me</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="product">
+      <div class="section" style="padding-top:40px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:44px;" id="pdGrid">
+          <div class="glass reveal in" style="height:520px; display:flex; align-items:center; justify-content:center; position:relative;">
+            <div class="badge badge-ai" style="top:20px; left:20px;">AI Recommended</div>
+            <div class="shoe-emoji" style="font-size:220px;">👟</div>
+          </div>
+          <div class="reveal in">
+            <div class="eyebrow">Running · Men's</div>
+            <h1 style="font-size:36px; margin-bottom:10px;">Aeroflux Runner X2</h1>
+            <div class="stars" style="margin-bottom:18px;">★★★★★ <span>4.9 (2,384 reviews)</span></div>
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:24px;">
+              <div class="price" style="font-size:32px;">$189<span class="old">$240</span></div>
+              <div class="badge badge-sale" style="position:static;">-21%</div>
+            </div>
+            <p style="color:var(--text-dim); line-height:1.7; margin-bottom:28px; font-weight:500;">Engineered with adaptive foam cells that respond to stride pressure in real time. Knit upper breathes on demand; carbon plate returns energy on push-off.</p>
+
+            <div style="margin-bottom:26px;">
+              <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); margin-bottom:10px;">Size</div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;" id="sizeRow"></div>
+            </div>
+
+            <div style="display:flex; gap:14px; margin-bottom:30px;">
+              <button class="btn btn-primary" style="flex:1;" onclick="ripple(event)">Add to Cart — $189</button>
+              <button class="btn btn-icon btn-ghost" onclick="ripple(event)">♡</button>
+            </div>
+
+            <div class="glass" style="padding:16px 18px; display:flex; align-items:center; gap:12px;">
+              <div class="stock-dot"><i></i> In stock</div>
+              <span style="color:var(--text-faint); font-size:13px;">·</span>
+              <span style="font-size:13px; color:var(--text-dim); font-weight:600;">Only 6 left in size 9 — 14 people viewing</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head-row">
+            <div><div class="eyebrow" style="color:var(--accent2); border-color:rgba(236,72,153,.25); background:rgba(236,72,153,.08);"><span class="dot" style="background:var(--accent2); box-shadow:0 0 10px var(--accent2);"></span> Complete the fit</div>
+            <h2 class="section-title">Frequently bought together</h2></div>
+          </div>
+          <div class="grid-4" id="fbtGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="components">
+      <div class="section" style="padding-top:40px;">
+        <div class="eyebrow"><span class="dot"></span> Component Library</div>
+        <h2 class="section-title">Buttons, inputs & primitives</h2>
+        <p class="section-sub" style="margin-bottom:40px;">Every interactive element carries the same glass material, mirror reflection, and glow-on-hover language.</p>
+
+        <div class="glass" style="padding:32px; margin-bottom:24px;">
+          <h3 style="margin-bottom:20px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;">Buttons</h3>
+          <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+            <button class="btn btn-primary" onclick="ripple(event)">Primary Action</button>
+            <button class="btn btn-hot" onclick="ripple(event)">Hot / Accent</button>
+            <button class="btn btn-ghost" onclick="ripple(event)">Ghost</button>
+            <button class="btn btn-primary btn-sm" onclick="ripple(event)">Small</button>
+            <button class="btn btn-icon btn-primary" onclick="ripple(event)">→</button>
+            <button class="btn btn-ghost" disabled style="opacity:.4; cursor:not-allowed;">Disabled</button>
+          </div>
+        </div>
+
+        <div class="glass" style="padding:32px; margin-bottom:24px;">
+          <h3 style="margin-bottom:24px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;">Inputs</h3>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div class="field"><input type="text" placeholder=" "/><label>Email address</label><div class="underline"></div><span class="icon">✉</span></div>
+            <div class="field"><input type="text" placeholder=" "/><label>Shipping ZIP code</label><div class="underline"></div><span class="icon">📍</span></div>
+            <div class="field"><input type="text" placeholder=" "/><label>Promo code</label><div class="underline"></div><span class="icon">%</span></div>
+            <div class="field"><input type="text" placeholder=" "/><label>Search shoes, brands...</label><div class="underline"></div><span class="icon">🔍</span></div>
+          </div>
+        </div>
+
+        <div class="glass" style="padding:32px;">
+          <h3 style="margin-bottom:20px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;">Badges & status</h3>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <span class="status-pill st-done">Delivered</span>
+            <span class="status-pill st-pending">Pending</span>
+            <span class="status-pill st-ship">Shipped</span>
+            <span class="badge badge-ai" style="position:static; display:inline-block;">AI Recommended</span>
+            <span class="badge badge-sale" style="position:static; display:inline-block;">-30% Sale</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="admin">
+      <div class="section" style="padding-top:36px;">
+        <div class="dash">
+          <div class="glass side">
+            <div class="side-item active">📊 Overview</div>
+            <div class="side-item">🛍️ Orders <span class="dot-ind"></span></div>
+            <div class="side-item">👟 Products</div>
+            <div class="side-item">📦 Inventory</div>
+            <div class="side-item">🧠 AI Insights</div>
+            <div class="side-item">👥 Customers</div>
+            <div class="side-item">⚙️ Automations</div>
+            <div class="side-item">🧾 Settings</div>
+          </div>
+          <div>
+            <div class="kpi-row">
+              <div class="glass kpi">
+                <div class="top"><div class="ico" style="background:rgba(59,130,246,.15); color:var(--primary);">$</div><div class="delta delta-up">+12.4%</div></div>
+                <div class="val">$482,910</div><div class="lbl">Revenue (30d)</div>
+              </div>
+              <div class="glass kpi">
+                <div class="top"><div class="ico" style="background:rgba(124,58,237,.15); color:var(--secondary);">📦</div><div class="delta delta-up">+8.1%</div></div>
+                <div class="val">3,214</div><div class="lbl">Orders</div>
+              </div>
+              <div class="glass kpi">
+                <div class="top"><div class="ico" style="background:rgba(236,72,153,.15); color:var(--accent2);">🧠</div><div class="delta delta-up">+3.2%</div></div>
+                <div class="val">97.2%</div><div class="lbl">AI Match Accuracy</div>
+              </div>
+              <div class="glass kpi">
+                <div class="top"><div class="ico" style="background:rgba(244,63,94,.15); color:var(--danger);">⚠</div><div class="delta delta-down">-4</div></div>
+                <div class="val">14</div><div class="lbl">Low Stock SKUs</div>
+              </div>
+            </div>
+
+            <div class="glass panel">
+              <div class="panel-head"><h3>Revenue trend</h3><div class="tabs" style="padding:3px;"><div class="tab active" style="padding:6px 12px; font-size:12px;">30D</div><div class="tab" style="padding:6px 12px; font-size:12px;">90D</div><div class="tab" style="padding:6px 12px; font-size:12px;">1Y</div></div></div>
+              <div class="chart-bars" id="revBars"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:22px;">
+              <div class="glass panel" style="margin-bottom:0;">
+                <div class="panel-head"><h3>Recent orders</h3><button class="btn btn-ghost btn-sm" onclick="ripple(event)">View all</button></div>
+                <table>
+                  <thead><tr><th>Order</th><th>Customer</th><th>Item</th><th>Status</th><th>Total</th></tr></thead>
+                  <tbody id="ordersBody"></tbody>
+                </table>
+              </div>
+              <div class="glass panel" style="margin-bottom:0;">
+                <div class="panel-head"><h3>Live activity</h3></div>
+                <div id="liveFeed"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="inventory">
+      <div class="section" style="padding-top:36px;">
+        <div class="section-head-row">
+          <div>
+            <div class="eyebrow"><span class="dot"></span> Inventory Intelligence</div>
+            <h2 class="section-title">Stock health</h2>
+            <p class="section-sub">Heatmap of sell-through velocity across sizes and styles, updated every 4 minutes.</p>
+          </div>
+          <button class="btn btn-ghost" onclick="ripple(event)">📷 Scan Barcode</button>
+        </div>
+
+        <div class="glass panel">
+          <div class="panel-head"><h3>Low stock alerts</h3><span class="status-pill st-pending">14 alerts</span></div>
+          <table>
+            <thead><tr><th>SKU</th><th>Style</th><th>Size</th><th>Remaining</th><th>Velocity</th><th></th></tr></thead>
+            <tbody id="lowStockBody"></tbody>
+          </table>
+        </div>
+
+        <div class="glass panel">
+          <div class="panel-head"><h3>Sell-through heatmap</h3></div>
+          <div class="heatmap" id="heatmap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>LunaStep Design System — built for Awwwards-grade production. © 2026</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
