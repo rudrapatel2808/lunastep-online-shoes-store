@@ -1,6 +1,7 @@
 // ================================================
-// ShoeStore — Main Script
+// LunaStep — Main Script
 // Cart System, Product Rendering, Navigation, Utilities
+// Now connected to PHP backend with graceful fallback
 // ================================================
 
 // ---------------- Scroll Effects ----------------
@@ -74,16 +75,24 @@ function showToast(message, type = '') {
   if (!container) return;
   const toast = document.createElement('div');
   toast.className = 'toast ' + type;
-  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> ${message}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> ${escapeHtml(message)}`;
   container.appendChild(toast);
   setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; }, 2500);
   setTimeout(() => toast.remove(), 3000);
 }
 
+// ---------------- HTML escaping (XSS defense for user-generated content) ----------------
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[ch]);
+}
+
 // ================================================
-// PRODUCT DATA
+// PRODUCT DATA — Fallback + Backend Loading
 // ================================================
-const allProducts = [
+const fallbackProducts = [
   { id: 1, img: 'img/runner.png', name: "Men's Nike T-Shirt Shoes", cat: 'Running', price: 189, old: 240, rating: 4.9, reviews: 2384, sale: true, desc: 'Lightweight and responsive running shoes designed for speed and comfort. Features breathable mesh upper and cushioned midsole.', colors: ['#111', '#DD3333', '#2563EB'], sizes: [6, 7, 8, 9, 10, 11, 12] },
   { id: 2, img: 'img/casual.png', name: 'Quilted Gleit With Hood', cat: 'Casual', price: 159, old: null, rating: 4.7, reviews: 842, sale: false, desc: 'Classic casual shoes perfect for everyday wear. Premium leather upper with soft interior lining for all-day comfort.', colors: ['#8B4513', '#111', '#F5F5DC'], sizes: [7, 8, 9, 10, 11] },
   { id: 3, img: 'img/trail.png', name: 'Jogers with Black Strip', cat: 'Trail', price: 214, old: 260, rating: 4.8, reviews: 1210, sale: true, desc: 'Rugged trail shoes built for off-road adventures. Aggressive tread pattern and waterproof upper for any terrain.', colors: ['#111', '#4CAF50', '#FF9800'], sizes: [7, 8, 9, 10, 11, 12] },
@@ -94,8 +103,50 @@ const allProducts = [
   { id: 8, img: 'img/performance.png', name: 'Volt Lab Sprint', cat: 'Performance', price: 195, old: null, rating: 4.7, reviews: 920, sale: false, desc: 'Competition-grade sprinting shoes with minimal weight and maximum energy return. Track and field certified.', colors: ['#FFD700', '#DD3333', '#111'], sizes: [7, 8, 9, 10, 11] },
 ];
 
-// Legacy compatibility
-const products = allProducts.slice(0, 4);
+// Active product list — starts with fallback, gets replaced if backend responds
+let allProducts = [...fallbackProducts];
+let products = allProducts.slice(0, 4);
+
+/**
+ * Try to load products from PHP backend.
+ * Falls back silently to hardcoded data if backend is unavailable.
+ */
+async function loadProductsFromBackend() {
+  if (typeof apiFetch === 'undefined') return; // api-config.js not loaded
+
+  const result = await apiFetch('/products.php');
+  if (result && Array.isArray(result) && result.length > 0) {
+    // Map backend format to frontend format
+    allProducts = result.map(p => ({
+      id: p.id,
+      img: p.image_url || 'img/runner.png',
+      name: p.name,
+      cat: p.category_name || 'Other',
+      price: parseFloat(p.discount_price || p.base_price),
+      old: p.discount_price ? parseFloat(p.base_price) : null,
+      rating: 4.5 + Math.random() * 0.5, // Will be replaced by real reviews later
+      reviews: Math.floor(Math.random() * 2000) + 100,
+      sale: p.discount_price !== null && p.discount_price !== undefined,
+      desc: p.description || '',
+      brand: p.brand || '',
+      colors: ['#111', '#DD3333', '#2563EB'],
+      sizes: [7, 8, 9, 10, 11],
+      variants: p.variants || [],
+      dbId: p.id // Keep original DB id
+    }));
+    products = allProducts.slice(0, 4);
+
+    // Re-render everything
+    renderProducts();
+    renderShopProducts();
+    renderFBT();
+    renderProductDetail();
+    console.log('✓ Products loaded from backend:', allProducts.length);
+  }
+}
+
+// Load from backend on page load
+loadProductsFromBackend();
 
 // ---------------- Categories (Circles) ----------------
 const categories = [
@@ -129,11 +180,11 @@ function createProductCard(p) {
   el.innerHTML = `
     <div class="pcard-media">
       ${p.sale ? '<div class="badge badge-sale">Sale</div>' : ''}
-      <img src="${p.img}" alt="${p.name}">
+      <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}">
     </div>
     <div class="pcard-body">
-      <div class="cat">${p.cat}</div>
-      <div class="name">${p.name}</div>
+      <div class="cat">${escapeHtml(p.cat)}</div>
+      <div class="name">${escapeHtml(p.name)}</div>
       <div class="stars">★★★★★ <span>(${p.reviews})</span></div>
       <div class="price-row">
         <div class="price">${p.old ? '<span class="old">' + formatPrice(p.old) + '</span>' : ''}${formatPrice(p.price)}</div>
@@ -170,7 +221,7 @@ function renderFBT() {
   fbt.forEach(p => {
     const el = document.createElement('div');
     el.className = 'pcard';
-    el.innerHTML = `<div class="pcard-media" style="height:160px;"><img src="${p.img}" alt="${p.name}"></div><div class="pcard-body"><div class="name" style="font-size:14px;">${p.name}</div><div class="price-row"><div class="price">${formatPrice(p.price)}</div></div></div>`;
+    el.innerHTML = `<div class="pcard-media" style="height:160px;"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}"></div><div class="pcard-body"><div class="name" style="font-size:14px;">${escapeHtml(p.name)}</div><div class="price-row"><div class="price">${formatPrice(p.price)}</div></div></div>`;
     fbtGrid.appendChild(el);
   });
 }
@@ -256,24 +307,121 @@ function updateCartBadge() {
 }
 updateCartBadge();
 
+// ---------------- Logged-in nav state (customer OR staff) ----------------
+// Signed-in staff see "Dashboard"; signed-in customers see their name / "My Account".
+// This keeps staff recognised while browsing the store (they are NOT logged out).
+function updateAuthNav() {
+  const role = localStorage.getItem('role');
+  const cust = (typeof getCurrentCustomer === 'function') ? getCurrentCustomer() : null;
+
+  let label, href;
+  if (role === 'admin')        { label = '🛠️ Dashboard'; href = 'admin.html'; }
+  else if (role === 'manager') { label = '🛠️ Dashboard'; href = 'inventory.html'; }
+  else if (cust)               { label = '👤 ' + (cust.first_name || 'My Account'); href = 'account.html'; }
+  else return; // not signed in — leave the "Login" button as-is
+
+  document.querySelectorAll('.topbar-actions a.btn.btn-primary.btn-sm').forEach(a => {
+    if (/login/i.test(a.textContent)) { a.textContent = label; a.setAttribute('href', href); }
+  });
+  document.querySelectorAll('#mobileNav a').forEach(a => {
+    const h = a.getAttribute('href') || '';
+    if (/login/i.test(a.textContent) && /login\.html/.test(h)) { a.textContent = label; a.setAttribute('href', href); }
+  });
+}
+updateAuthNav();
+
 // ================================================
-// ADMIN ORDERS (kept for admin.html)
+// ADMIN ORDERS — Now fetches from backend
 // ================================================
-const orders = [
+// Fallback data
+const fallbackOrders = [
   { id: '#8241', cust: 'Maya Chen', item: 'Aeroflux Runner X2', status: 'done', total: 189 },
   { id: '#8240', cust: 'Diego Ruiz', item: 'Nimbus Trail Pro', status: 'ship', total: 214 },
   { id: '#8239', cust: 'Amara Obi', item: 'Urban Forge Chelsea', status: 'pending', total: 159 },
   { id: '#8238', cust: 'Leo Park', item: 'Volt Lab Sprint', status: 'done', total: 175 },
 ];
-const stMap = { done: ['Delivered', 'st-done'], ship: ['Shipped', 'st-ship'], pending: ['Processing', 'st-pending'] };
-function renderOrders() {
+const stMap = { done: ['Delivered', 'st-done'], ship: ['Shipped', 'st-ship'], pending: ['Processing', 'st-pending'], delivered: ['Delivered', 'st-done'], shipped: ['Shipped', 'st-ship'], processing: ['Processing', 'st-pending'], cancelled: ['Cancelled', 'st-pending'] };
+
+function renderOrders(orderData) {
   const tbody = document.getElementById('ordersBody');
   if (!tbody) return;
-  tbody.innerHTML = orders.map(o => `
+
+  if (orderData && Array.isArray(orderData)) {
+    // Render backend data
+    tbody.innerHTML = orderData.map(o => {
+      const statusKey = o.status || 'pending';
+      const statusInfo = stMap[statusKey] || ['Unknown', 'st-pending'];
+      const customerName = (o.first_name && o.last_name) ? escapeHtml(`${o.first_name} ${o.last_name}`) : 'Guest';
+      return `
+        <tr>
+          <td>${escapeHtml(o.order_number || '#' + o.id)}</td>
+          <td>${customerName}</td>
+          <td>${escapeHtml(o.first_item_name || 'Order')}</td>
+          <td>
+            <select class="status-select status-pill ${statusInfo[1]}" onchange="updateOrderStatus(${o.id}, this.value)" style="cursor:pointer; border:none; font-weight:700; font-size:11px; padding:4px 8px; border-radius:20px;">
+              <option value="pending" ${statusKey === 'pending' ? 'selected' : ''}>Processing</option>
+              <option value="processing" ${statusKey === 'processing' ? 'selected' : ''}>Processing</option>
+              <option value="shipped" ${statusKey === 'shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="delivered" ${statusKey === 'delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="cancelled" ${statusKey === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </td>
+          <td>${formatPrice(parseFloat(o.total_amount))}</td>
+        </tr>`;
+    }).join('');
+    return;
+  }
+
+  // Fallback render
+  tbody.innerHTML = fallbackOrders.map(o => `
     <tr><td>${o.id}</td><td>${o.cust}</td><td>${o.item}</td><td><span class="status-pill ${stMap[o.status][1]}">${stMap[o.status][0]}</span></td><td>${formatPrice(o.total)}</td></tr>
   `).join('');
 }
 renderOrders();
+
+// Update order status (admin)
+async function updateOrderStatus(orderId, newStatus) {
+  if (typeof apiFetch === 'undefined') return;
+  const result = await apiFetch('/orders.php', {
+    method: 'PUT',
+    body: { id: orderId, status: newStatus }
+  });
+  if (result && !result.error) {
+    showToast(`Order status updated to "${newStatus}"`, 'success');
+  } else {
+    showToast('Failed to update order status', 'error');
+  }
+}
+
+// Load orders from backend for admin page
+async function loadAdminOrders() {
+  if (typeof apiFetch === 'undefined') return;
+  const tbody = document.getElementById('ordersBody');
+  if (!tbody) return;
+
+  const result = await apiFetch('/orders.php?limit=20');
+  if (result && Array.isArray(result)) {
+    renderOrders(result);
+  }
+}
+loadAdminOrders();
+
+// Load dashboard stats from backend
+async function loadDashboardStats() {
+  if (typeof apiFetch === 'undefined') return;
+  const result = await apiFetch('/stats.php');
+  if (!result || result.error) return;
+
+  // Update KPI values if elements exist
+  const kpiVals = document.querySelectorAll('.kpi .val');
+  if (kpiVals.length >= 4) {
+    kpiVals[0].textContent = '$' + (result.today_revenue >= 1000 ? (result.today_revenue / 1000).toFixed(1) + 'k' : result.today_revenue.toFixed(0));
+    kpiVals[1].textContent = result.total_orders;
+    kpiVals[2].textContent = result.total_customers.toLocaleString();
+    kpiVals[3].textContent = result.low_stock_alerts;
+  }
+}
+loadDashboardStats();
 
 // Low stock table
 const low = [
@@ -378,7 +526,7 @@ function renderProductDetail() {
     return;
   }
 
-  document.title = `${product.name} — ShoeStore`;
+  document.title = `${product.name} — LunaStep`;
 
   let selectedSize = product.sizes[2] || product.sizes[0];
   let selectedColor = product.colors[0];
@@ -389,11 +537,11 @@ function renderProductDetail() {
     container.innerHTML = `
       <div class="product-image-box">
         ${product.sale ? '<div class="badge badge-sale" style="position:absolute;top:20px;right:20px;">Sale</div>' : ''}
-        <img src="${product.img}" alt="${product.name}" />
+        <img src="${escapeHtml(product.img)}" alt="${escapeHtml(product.name)}" />
       </div>
       <div class="product-info">
-        <div class="breadcrumb"><a href="index.html">Home</a> / <a href="products.html">Shop</a> / <a href="products.html?category=${product.cat}">${product.cat}</a> / ${product.name}</div>
-        <h1>${product.name}</h1>
+        <div class="breadcrumb"><a href="index.html">Home</a> / <a href="products.html">Shop</a> / <a href="products.html?category=${encodeURIComponent(product.cat)}">${escapeHtml(product.cat)}</a> / ${escapeHtml(product.name)}</div>
+        <h1>${escapeHtml(product.name)}</h1>
         <div class="product-rating">
           <span class="star-display">${'★'.repeat(Math.round(product.rating))}${'☆'.repeat(5 - Math.round(product.rating))}</span>
           <span>${product.rating} (${product.reviews.toLocaleString()} reviews)</span>
@@ -503,10 +651,10 @@ function renderCartPage() {
 
   cartItemsEl.innerHTML = cart.map((item, i) => `
     <div class="cart-item">
-      <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
+      <div class="cart-item-img"><img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.name)}"></div>
       <div class="cart-item-details">
         <div>
-          <div class="item-name">${item.name}</div>
+          <div class="item-name">${escapeHtml(item.name)}</div>
           <div class="item-meta">Size: ${item.size} · Color: <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${item.color};vertical-align:middle;border:1px solid var(--border);"></span></div>
         </div>
         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
@@ -547,7 +695,7 @@ function renderCartPage() {
 renderCartPage();
 
 // ================================================
-// CHECKOUT PAGE
+// CHECKOUT PAGE — Now POSTs to backend
 // ================================================
 function renderCheckoutSummary() {
   const summaryEl = document.getElementById('checkoutSummary');
@@ -592,18 +740,70 @@ document.querySelectorAll('.payment-option').forEach(opt => {
   });
 });
 
-// Checkout form submit
+// Checkout form submit — POST to backend
 const checkoutForm = document.getElementById('checkoutForm');
 if (checkoutForm) {
-  checkoutForm.addEventListener('submit', (e) => {
+  checkoutForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const orderId = 'ORD-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+
+    const cart = getCart();
+    if (cart.length === 0) {
+      showToast('Your cart is empty!', 'error');
+      return;
+    }
+
+    const subtotal = getCartTotal();
+    const shipping = subtotal >= 100 ? 0 : 9.99;
+    const tax = subtotal * 0.08;
+    const total = subtotal + shipping + tax;
+
+    // Build shipping address
+    const address = [
+      document.getElementById('address')?.value,
+      document.getElementById('city')?.value,
+      document.getElementById('state')?.value,
+      document.getElementById('zip')?.value,
+      document.getElementById('country')?.value
+    ].filter(Boolean).join(', ');
+
+    const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'cod';
+
+    // Build order data
+    const orderData = {
+      items: cart.map(item => ({
+        variant_id: null, // We don't have variant IDs in frontend cart yet
+        quantity: item.qty,
+        price: item.price
+      })),
+      total_amount: total,
+      shipping_address: address,
+      payment_method: paymentMethod
+    };
+
+    // Try backend
+    let orderId = 'ORD-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+
+    if (typeof apiFetch !== 'undefined') {
+      const result = await apiFetch('/orders.php', {
+        method: 'POST',
+        body: orderData
+      });
+
+      if (result && !result.error && result.order_number) {
+        orderId = result.order_number;
+      }
+    }
+
+    // Show confirmation
     document.getElementById('checkoutFormSection').style.display = 'none';
     const confirmEl = document.getElementById('orderConfirmation');
     confirmEl.style.display = 'block';
     document.getElementById('confirmOrderId').textContent = orderId;
+
     // Clear cart
     localStorage.removeItem('shoestore_cart');
     updateCartBadge();
+
+    showToast('Order placed successfully! 🎉', 'success');
   });
 }

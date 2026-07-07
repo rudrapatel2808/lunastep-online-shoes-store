@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ShoeStore — Premium online shoes selling system. Shop the latest sneakers, boots, and athletic footwear with free shipping." />
-  <title>ShoeStore — Premium Footwear Online</title>
+  <meta name="description" content="LunaStep — Premium online shoes selling system. Shop the latest sneakers, boots, and athletic footwear with free shipping." />
+  <title>LunaStep — Premium Footwear Online</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -17,7 +17,7 @@
 
   <!-- NAVIGATION BAR -->
   <div class="topbar" id="topbar">
-    <a href="index.html" class="brand"><span class="mark"></span> ShoeStore</a>
+    <a href="index.html" class="brand"><span class="mark"></span> LunaStep</a>
     <div class="nav-links">
       <a href="index.html" class="nav-link active">Home</a>
       <a href="products.html" class="nav-link">Shop</a>
@@ -40,7 +40,7 @@
         </svg>
         <span class="cart-badge" id="cartBadge">0</span>
       </a>
-      <a href="customer-login.html" class="btn btn-primary btn-sm">Login</a>
+      <a href="login.html" class="btn btn-primary btn-sm">Login</a>
       <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -55,8 +55,8 @@
     <a href="about.html">About Us</a>
     <a href="contact.html">Contact</a>
     <a href="cart.html">🛒 Cart</a>
-    <a href="customer-login.html">Login / Register</a>
-    <a href="login.html" style="color:var(--text-faint); font-size:13px;">Staff Portal →</a>
+    <a href="login.html">Login / Register</a>
+    <a href="login.html?role=staff" style="color:var(--text-faint); font-size:13px;">Staff Portal →</a>
   </div>
 
   <div class="app">
@@ -66,7 +66,7 @@
       <div class="reveal in">
         <div class="eyebrow">Summer Collection 2026</div>
         <h1>New Summer<br />Collection.</h1>
-        <p class="lead">Step into intelligent footwear. ShoeStore pairs a luxury shopping experience with real-time
+        <p class="lead">Step into intelligent footwear. LunaStep pairs a luxury shopping experience with real-time
           inventory intelligence and premium quality shoes.</p>
         <div class="hero-actions">
           <a href="products.html" class="btn btn-primary">Shop Now +</a>
@@ -143,7 +143,7 @@
   <footer class="site-footer">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand"><span class="mark-light"></span> ShoeStore</div>
+        <div class="footer-brand"><span class="mark-light"></span> LunaStep</div>
         <p class="footer-desc">Premium footwear for every occasion. We combine style, comfort, and technology to bring you the best shoe shopping experience online.</p>
         <div class="social-links">
           <div class="social-link">𝕏</div>
@@ -161,7 +161,7 @@
       </div>
       <div class="footer-col">
         <h4>Customer</h4>
-        <a href="customer-login.html">My Account</a>
+        <a href="account.html">My Account</a>
         <a href="cart.html">Shopping Cart</a>
         <a href="products.html">Track Order</a>
         <a href="contact.html">Help Center</a>
@@ -171,17 +171,18 @@
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
         <a href="#">Return Policy</a>
-        <a href="login.html">Staff Portal</a>
+        <a href="login.html?role=staff">Staff Portal</a>
       </div>
     </div>
     <div class="footer-bottom">
-      Online Shoes Selling System — Smart Shoe E-Commerce Platform. © 2026 ShoeStore. All rights reserved.
+      Online Shoes Selling System — Smart Shoe E-Commerce Platform. © 2026 LunaStep. All rights reserved.
     </div>
   </footer>
 
   <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="api-config.js"></script>
   <script src="script.js"></script>
 </body>
 

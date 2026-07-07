@@ -1,54 +1,85 @@
 <?php
-// backend/api/reviews.php
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, GET");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+// backend/api/reviews.php — Reviews API
+// GET: get reviews for a product, POST: submit review
 
-include_once '../config/database.php';
+include_once __DIR__ . '/config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+// ==========================================
+// GET — Get reviews for a product
+// ==========================================
 if ($method === 'GET') {
     if (isset($_GET['product_id'])) {
         $product_id = $_GET['product_id'];
-        $query = "SELECT r.*, u.first_name, u.last_name FROM reviews r JOIN users u ON r.user_id = u.id WHERE r.product_id = ? ORDER BY r.created_at DESC";
+        $query = "SELECT r.*, u.first_name, u.last_name 
+                  FROM reviews r 
+                  JOIN users u ON r.user_id = u.id 
+                  WHERE r.product_id = ? 
+                  ORDER BY r.created_at DESC";
         $stmt = $conn->prepare($query);
         $stmt->execute([$product_id]);
         $reviews = $stmt->fetchAll();
-        
-        echo json_encode($reviews);
+
+        // Also get average rating
+        $avgStmt = $conn->prepare("SELECT AVG(rating) as avg_rating, COUNT(*) as total FROM reviews WHERE product_id = ?");
+        $avgStmt->execute([$product_id]);
+        $stats = $avgStmt->fetch();
+
+        echo json_encode([
+            "reviews" => $reviews,
+            "avg_rating" => round($stats['avg_rating'], 1),
+            "total_reviews" => intval($stats['total'])
+        ]);
     } else {
-        http_response_code(400);
-        echo json_encode(["message" => "Missing product_id."]);
+        jsonResponse(["message" => "Missing product_id parameter."], 400);
     }
-} elseif ($method === 'POST') {
-    $data = json_decode(file_get_contents("php://input"));
-    
-    if (!empty($data->product_id) && !empty($data->user_id) && !empty($data->rating)) {
+}
+
+// ==========================================
+// POST — Submit a review (logged-in customers)
+// ==========================================
+elseif ($method === 'POST') {
+    $data = getRequestBody();
+
+    // Reviews require login; the reviewer is ALWAYS the session user (no spoofing)
+    $user = requireLogin();
+    $user_id = $user['id'];
+
+    if (!empty($data->product_id) && !empty($data->rating)) {
+        // Validate rating
+        $rating = intval($data->rating);
+        if ($rating < 1 || $rating > 5) {
+            jsonResponse(["message" => "Rating must be between 1 and 5."], 400);
+        }
+
+        // Check if user already reviewed this product
+        $checkStmt = $conn->prepare("SELECT id FROM reviews WHERE product_id = ? AND user_id = ?");
+        $checkStmt->execute([$data->product_id, $user_id]);
+        if ($checkStmt->rowCount() > 0) {
+            jsonResponse(["message" => "You have already reviewed this product."], 400);
+        }
+
         $query = "INSERT INTO reviews (product_id, user_id, rating, comment) VALUES (:product_id, :user_id, :rating, :comment)";
         $stmt = $conn->prepare($query);
-        
         $stmt->bindParam(':product_id', $data->product_id);
-        $stmt->bindParam(':user_id', $data->user_id);
-        $stmt->bindParam(':rating', $data->rating);
-        
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':rating', $rating);
+
         $comment = isset($data->comment) ? $data->comment : null;
         $stmt->bindParam(':comment', $comment);
-        
+
         if ($stmt->execute()) {
-            http_response_code(201);
-            echo json_encode(["message" => "Review added successfully."]);
+            jsonResponse(["message" => "Review submitted successfully!"], 201);
         } else {
-            http_response_code(503);
-            echo json_encode(["message" => "Unable to add review."]);
+            jsonResponse(["message" => "Unable to submit review."], 503);
         }
     } else {
-        http_response_code(400);
-        echo json_encode(["message" => "Incomplete data."]);
+        jsonResponse(["message" => "Product ID, user ID, and rating are required."], 400);
     }
-} else {
-    http_response_code(405);
-    echo json_encode(["message" => "Method not allowed."]);
+}
+
+else {
+    jsonResponse(["message" => "Method not allowed."], 405);
 }
 ?>

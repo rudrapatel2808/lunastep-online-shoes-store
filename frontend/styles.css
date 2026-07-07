@@ -51,8 +51,9 @@ a{ text-decoration:none; color:inherit; }
 .topbar.scrolled{ box-shadow:0 4px 20px rgba(0,0,0,0.06); }
 
 .brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:22px; letter-spacing:-0.02em; }
-.brand .mark{ width:32px; height:32px; border-radius:9px; background:var(--primary); position:relative; flex-shrink:0; }
-.brand .mark::after{ content:''; position:absolute; inset:8px; border-radius:50%; background:var(--accent); }
+.brand .mark{ width:34px; height:34px; border-radius:10px; background:var(--primary); position:relative; flex-shrink:0; box-shadow:0 3px 8px rgba(17,17,17,.18); }
+.brand .mark::before{ content:''; position:absolute; left:8px; top:8px; width:18px; height:18px; border-radius:50%; background:var(--accent); box-shadow:6px -3px 0 0 var(--primary); }
+.brand .mark::after{ content:''; position:absolute; right:7px; top:8px; width:3.5px; height:3.5px; border-radius:50%; background:var(--accent); }
 
 .nav-links{ display:flex; align-items:center; gap:6px; }
 .nav-link{
@@ -754,12 +755,17 @@ select.form-input{ cursor:pointer; appearance:none; }
 @media(max-width:500px){ .footer-grid{ grid-template-columns:1fr; } }
 .footer-brand{ font-size:22px; font-weight:800; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
 .footer-brand .mark-light{
-  width:30px; height:30px; border-radius:8px;
+  width:32px; height:32px; border-radius:9px;
   background:var(--accent); position:relative;
 }
+.footer-brand .mark-light::before{
+  content:''; position:absolute; left:7px; top:7px;
+  width:17px; height:17px; border-radius:50%;
+  background:var(--primary); box-shadow:6px -3px 0 0 var(--accent);
+}
 .footer-brand .mark-light::after{
-  content:''; position:absolute; inset:7px;
-  border-radius:50%; background:var(--primary);
+  content:''; position:absolute; right:7px; top:8px;
+  width:3px; height:3px; border-radius:50%; background:var(--primary);
 }
 .footer-desc{ font-size:14px; color:rgba(255,255,255,0.5); line-height:1.7; margin-bottom:20px; }
 .footer-col h4{
