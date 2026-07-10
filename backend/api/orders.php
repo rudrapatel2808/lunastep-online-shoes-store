@@ -3,6 +3,7 @@
 // POST: create order, PUT: update status, GET: list/filter
 
 include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/webhooks.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -19,9 +20,9 @@ if ($method === 'POST') {
             // Generate order number
             $order_number = 'ORD-' . strtoupper(uniqid());
 
-            // Get user ID from session (null for guests)
+            // Get user ID from session only (never trust client-supplied user_id)
             $user = getLoggedInUser();
-            $user_id = $user ? $user['id'] : (isset($data->user_id) ? $data->user_id : null);
+            $user_id = $user ? $user['id'] : null;
 
             $query = "INSERT INTO orders (user_id, order_number, total_amount, shipping_address, payment_method) 
                       VALUES (:user_id, :order_number, :total, :address, :payment)";
@@ -39,16 +40,33 @@ if ($method === 'POST') {
             $item_query = "INSERT INTO order_items (order_id, variant_id, quantity, price_at_purchase) VALUES (:order_id, :variant_id, :quantity, :price)";
             $item_stmt = $conn->prepare($item_query);
 
+            // Prepared statements for stock deduction & history
+            $stock_stmt = $conn->prepare("UPDATE product_variants SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
+            $hist_stmt = $conn->prepare("INSERT INTO stock_history (variant_id, change_qty, reason) VALUES (?, ?, ?)");
+
             foreach ($data->items as $item) {
                 $variant_id = isset($item->variant_id) ? $item->variant_id : null;
+                $qty = intval($item->quantity);
                 $item_stmt->bindParam(':order_id', $order_id);
                 $item_stmt->bindParam(':variant_id', $variant_id);
-                $item_stmt->bindParam(':quantity', $item->quantity);
+                $item_stmt->bindParam(':quantity', $qty);
                 $item_stmt->bindParam(':price', $item->price);
                 $item_stmt->execute();
+
+                // Deduct stock & log history
+                if ($variant_id) {
+                    $stock_stmt->execute([$qty, $variant_id, $qty]);
+                    if ($stock_stmt->rowCount() === 0) {
+                        throw new Exception("Insufficient stock for variant #{$variant_id}");
+                    }
+                    $hist_stmt->execute([$variant_id, -$qty, "Order {$order_number}"]);
+                }
             }
 
             $conn->commit();
+
+            // Fire n8n webhook
+            triggerWebhook('order_placed', ['order_number' => $order_number, 'total' => $data->total_amount]);
 
             jsonResponse([
                 "message" => "Order placed successfully!",
@@ -158,24 +176,29 @@ elseif ($method === 'PUT') {
     $user = requireRole(['admin', 'manager']);
     $data = getRequestBody();
 
-    if (!empty($data->id) && !empty($data->status)) {
-        $validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-        if (!in_array($data->status, $validStatuses)) {
-            jsonResponse(["message" => "Invalid status. Must be one of: " . implode(', ', $validStatuses)], 400);
-        }
+    if (empty($data->id)) jsonResponse(["message" => "Order ID is required."], 400);
 
-        $stmt = $conn->prepare("UPDATE orders SET status = :status WHERE id = :id");
-        $stmt->bindParam(':status', $data->status);
-        $stmt->bindParam(':id', $data->id);
+    $fields = []; $params = [];
 
-        if ($stmt->execute()) {
-            jsonResponse(["message" => "Order status updated to '{$data->status}'."]);
-        } else {
-            jsonResponse(["message" => "Unable to update order status."], 503);
-        }
-    } else {
-        jsonResponse(["message" => "Order ID and status are required."], 400);
+    if (!empty($data->status)) {
+        $valid = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if (!in_array($data->status, $valid)) jsonResponse(["message" => "Invalid status."], 400);
+        $fields[] = "status = ?"; $params[] = $data->status;
     }
+    if (isset($data->tracking_number)) {
+        $fields[] = "tracking_number = ?"; $params[] = $data->tracking_number;
+    }
+    if (empty($fields)) jsonResponse(["message" => "Nothing to update."], 400);
+
+    $params[] = $data->id;
+    $stmt = $conn->prepare("UPDATE orders SET " . implode(", ", $fields) . " WHERE id = ?");
+    $stmt->execute($params);
+
+    // Fire webhook on status change
+    if (!empty($data->status)) {
+        triggerWebhook('order_' . $data->status, ['order_id' => $data->id, 'status' => $data->status]);
+    }
+    jsonResponse(["message" => "Order updated."]);    
 }
 
 else {

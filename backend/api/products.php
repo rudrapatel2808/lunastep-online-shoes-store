@@ -60,10 +60,17 @@ if ($method === 'GET') {
 
         $query .= " ORDER BY p.created_at DESC";
 
+        // Pagination
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 50;
+        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+        $query .= " LIMIT :lim OFFSET :off";
+
         $stmt = $conn->prepare($query);
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val);
         }
+        $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $products = $stmt->fetchAll();
 

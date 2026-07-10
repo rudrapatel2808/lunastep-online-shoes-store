@@ -3,7 +3,7 @@
 // Change API_BASE to match your XAMPP/WAMP setup
 // ================================================
 
-const API_BASE = 'http://localhost/lunastep-online-shoes-store/backend/api';
+const API_BASE = 'http://localhost/college/backend/api';
 
 /**
  * Helper to make API calls with consistent error handling.

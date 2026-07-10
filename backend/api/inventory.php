@@ -3,6 +3,7 @@
 // GET: list variants with stock, PUT: update stock, POST: add variant
 
 include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/webhooks.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -95,6 +96,17 @@ elseif ($method === 'PUT') {
         }
 
         if ($stmt->execute()) {
+            // Log stock history if quantity changed
+            if (isset($data->stock_quantity)) {
+                $conn->prepare("INSERT INTO stock_history (variant_id, change_qty, reason) VALUES (?, ?, ?)")
+                    ->execute([$data->id, intval($data->stock_quantity), "Manual update"]);
+                // Low stock webhook
+                $check = $conn->prepare("SELECT pv.*, p.name FROM product_variants pv JOIN products p ON pv.product_id = p.id WHERE pv.id = ? AND pv.stock_quantity <= pv.low_stock_threshold");
+                $check->execute([$data->id]);
+                if ($row = $check->fetch()) {
+                    triggerWebhook('low_stock_alert', ['product' => $row['name'], 'sku' => $row['sku'], 'stock' => $row['stock_quantity']]);
+                }
+            }
             jsonResponse(["message" => "Stock updated successfully."]);
         } else {
             jsonResponse(["message" => "Unable to update stock."], 503);

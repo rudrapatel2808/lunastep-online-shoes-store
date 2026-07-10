@@ -190,6 +190,34 @@ if ($method === 'POST') {
         }
     }
 
+    // --- PASSWORD RESET REQUEST ---
+    elseif ($action === 'password-reset-request') {
+        if (empty($data->email)) jsonResponse(["message" => "Email required."], 400);
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->execute([$data->email]);
+        if ($stmt->rowCount() === 0) jsonResponse(["message" => "If this email exists, a reset link has been sent."]); // don't leak
+        $token = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        $conn->prepare("DELETE FROM password_resets WHERE email = ?")->execute([$data->email]); // one active token per email
+        $conn->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)")->execute([$data->email, $token, $expires]);
+        // In production, email this token. For now, return it.
+        jsonResponse(["message" => "Reset token generated.", "token" => $token, "note" => "In production, this token would be emailed."]);
+    }
+
+    // --- PASSWORD RESET (with token) ---
+    elseif ($action === 'password-reset') {
+        if (empty($data->token) || empty($data->password)) jsonResponse(["message" => "Token and new password required."], 400);
+        if (strlen($data->password) < 6) jsonResponse(["message" => "Password must be at least 6 characters."], 400);
+        $stmt = $conn->prepare("SELECT * FROM password_resets WHERE token = ? AND used = 0 AND expires_at > NOW()");
+        $stmt->execute([$data->token]);
+        $reset = $stmt->fetch();
+        if (!$reset) jsonResponse(["message" => "Invalid or expired token."], 400);
+        $hash = password_hash($data->password, PASSWORD_DEFAULT);
+        $conn->prepare("UPDATE users SET password_hash = ? WHERE email = ?")->execute([$hash, $reset['email']]);
+        $conn->prepare("UPDATE password_resets SET used = 1 WHERE id = ?")->execute([$reset['id']]);
+        jsonResponse(["message" => "Password reset successful. You can now login."]);
+    }
+
     // --- LOGOUT ---
     elseif ($action === 'logout') {
         session_unset();
