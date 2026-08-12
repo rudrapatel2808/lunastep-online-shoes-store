@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="LunaStep — Premium online shoes selling system. Shop the latest sneakers, boots, and athletic footwear with free shipping." />
+  <title>LunaStep — Premium Footwear Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <div class="topbar" id="topbar">
+    <a href="index.html" class="brand"><span class="mark"></span> LunaStep</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="products.html" class="nav-link">Shop</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="topbar-actions">
+      <select id="currencySelector"
+        style="background:transparent; border:none; color:var(--primary); font-family:inherit; font-weight:700; cursor:pointer; outline:none; font-size:13px;">
+        <option value="USD">🇺🇸 USD ($)</option>
+        <option value="EUR">🇪🇺 EUR (€)</option>
+        <option value="GBP">🇬🇧 GBP (£)</option>
+        <option value="INR">🇮🇳 INR (₹)</option>
+      </select>
+      <a href="cart.html" class="icon-btn" id="cartIconBtn" title="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <a href="login.html" class="btn btn-primary btn-sm">Login</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html" class="active">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="login.html">Login / Register</a>
+    <a href="login.html?role=staff" style="color:var(--text-faint); font-size:13px;">Staff Portal →</a>
+  </div>
+
+  <div class="app">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="reveal in">
+        <div class="eyebrow">Summer Collection 2026</div>
+        <h1>Style That Like<br />Your Journey.</h1>
+        <p class="lead">Step into intelligent footwear. LunaStep pairs a luxury shopping experience with real-time
+          inventory intelligence and premium quality shoes.</p>
+        <div class="hero-actions">
+          <a href="products.html" class="btn btn-primary">Shop Now +</a>
+          <a href="products.html" class="btn btn-ghost">Explore Collection</a>
+        </div>
+      </div>
+      <div class="reveal in" style="transition-delay:.2s;">
+        <div class="hero-visual">
+          <svg class="blob" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M47.7,-68.8C61.4,-61.7,71.8,-48.1,77.3,-33.1C82.7,-18.2,83.1,-2,79.5,13C75.8,28,68.2,41.8,56.5,51.8C44.7,61.7,28.8,67.8,11.8,72C-5.3,76.2,-23.5,78.5,-38.7,71.8C-53.9,65.1,-66,49.4,-72.9,32.4C-79.9,15.4,-81.7,-2.9,-77.3,-19.6C-72.9,-36.3,-62.4,-51.3,-48.4,-58.5C-34.4,-65.7,-17.2,-65,0.1,-65.1C17.3,-65.3,34.1,-75.8,47.7,-68.8Z"
+              transform="translate(100 100)" />
+          </svg>
+          <div class="shoe-emoji"><img src="img/runner-removebg-preview.png" style="width: 320px;" alt="Featured Shoe"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURED BRANDS -->
+    <div class="brands-row reveal in">
+      <span>Nike</span>
+      <span>Adidas</span>
+      <span>Puma</span>
+      <span>Reebok</span>
+      <span>New Balance</span>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="section reveal in">
+      <div class="section-head-row">
+        <h2 class="section-title">Shop by Categories</h2>
+      </div>
+      <div class="cat-circles-row" id="catGrid"></div>
+    </div>
+
+    <!-- NEW ARRIVALS GRID -->
+    <div id="shop" class="section reveal in">
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-title">New Arrivals</h2>
+          <span
+            style="display:inline-block; margin-left:16px; padding-left:16px; border-left:2px solid var(--border-strong); color:var(--text-dim); font-weight:600;">Our
+            newly launched shoes collection.</span>
+        </div>
+        <a href="products.html" class="btn btn-ghost btn-sm">View All →</a>
+      </div>
+      <div class="grid-4" id="productGrid"></div>
+    </div>
+
+    <!-- FREQUENTLY BOUGHT TOGETHER -->
+    <div class="section reveal in">
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-title">Frequently Bought Together</h2>
+          <span style="display:inline-block; margin-left:16px; padding-left:16px; border-left:2px solid var(--border-strong); color:var(--text-dim); font-weight:600;">Customers also love these items.</span>
+        </div>
+      </div>
+      <div class="grid-4" id="fbtGrid"></div>
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div class="newsletter reveal in">
+      <h2>Stay in the Loop</h2>
+      <p>Subscribe to get special offers, free giveaways, and new arrival updates.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('Thanks for subscribing! 🎉','success');">
+        <input type="email" placeholder="Enter your email address" required />
+        <button type="submit" class="btn btn-accent">Subscribe</button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- FULL FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="mark-light"></span> LunaStep</div>
+        <p class="footer-desc">Premium footwear for every occasion. We combine style, comfort, and technology to bring you the best shoe shopping experience online.</p>
+        <div class="social-links">
+          <div class="social-link">𝕏</div>
+          <div class="social-link">f</div>
+          <div class="social-link">in</div>
+          <div class="social-link">▶</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="products.html">Shop</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <a href="account.html">My Account</a>
+        <a href="cart.html">Shopping Cart</a>
+        <a href="products.html">Track Order</a>
+        <a href="contact.html">Help Center</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Return Policy</a>
+        <a href="login.html?role=staff">Staff Portal</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      Online Shoes Selling System — Smart Shoe E-Commerce Platform. © 2026 LunaStep. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

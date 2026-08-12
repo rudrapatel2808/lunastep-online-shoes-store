@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Complete your purchase securely at LunaStep." />
+  <title>Checkout — LunaStep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <div class="topbar" id="topbar">
+    <a href="index.html" class="brand"><span class="mark"></span> LunaStep</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Shop</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="topbar-actions">
+      <a href="cart.html" class="icon-btn" title="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="login.html">Login / Register</a>
+  </div>
+
+  <div class="app">
+
+    <div style="padding-top:20px; margin-bottom:30px;" class="reveal in">
+      <div class="breadcrumb" style="font-size:13px; color:var(--text-faint); font-weight:600;">
+        <a href="index.html" style="color:var(--text-dim);">Home</a> /
+        <a href="cart.html" style="color:var(--text-dim);">Cart</a> / Checkout
+      </div>
+      <h1 style="font-size:42px; margin-top:12px;">Checkout</h1>
+    </div>
+
+    <!-- CHECKOUT FORM -->
+    <div id="checkoutFormSection">
+      <form id="checkoutForm">
+        <div class="checkout-layout reveal in">
+
+          <div>
+            <!-- SHIPPING INFO -->
+            <div class="checkout-form" style="margin-bottom:24px;">
+              <h3>Shipping Information</h3>
+              <div class="form-row" style="margin-top:20px;">
+                <div class="form-group">
+                  <label for="firstName">First Name</label>
+                  <input type="text" id="firstName" class="form-input" placeholder="John" required />
+                </div>
+                <div class="form-group">
+                  <label for="lastName">Last Name</label>
+                  <input type="text" id="lastName" class="form-input" placeholder="Doe" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" placeholder="john@example.com" required />
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" placeholder="+1 (555) 123-4567" required />
+              </div>
+              <div class="form-group">
+                <label for="address">Street Address</label>
+                <input type="text" id="address" class="form-input" placeholder="123 Main Street, Apt 4B" required />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" id="city" class="form-input" placeholder="New York" required />
+                </div>
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" id="state" class="form-input" placeholder="NY" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="zip">ZIP Code</label>
+                  <input type="text" id="zip" class="form-input" placeholder="10001" required />
+                </div>
+                <div class="form-group">
+                  <label for="country">Country</label>
+                  <select id="country" class="form-input" required>
+                    <option value="">Select Country</option>
+                    <option value="US" selected>United States</option>
+                    <option value="IN">India</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="CA">Canada</option>
+                    <option value="AU">Australia</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAYMENT METHOD -->
+            <div class="checkout-form">
+              <h3>Payment Method</h3>
+              <div class="payment-options" style="margin-top:20px;">
+                <label class="payment-option selected">
+                  <input type="radio" name="payment" value="cod" checked />
+                  <div class="payment-radio"></div>
+                  <div>
+                    <div class="payment-label">💵 Cash on Delivery</div>
+                    <div class="payment-sub">Pay when you receive your order</div>
+                  </div>
+                </label>
+                <label class="payment-option">
+                  <input type="radio" name="payment" value="card" />
+                  <div class="payment-radio"></div>
+                  <div>
+                    <div class="payment-label">💳 Credit / Debit Card</div>
+                    <div class="payment-sub">Visa, Mastercard, American Express</div>
+                  </div>
+                </label>
+                <label class="payment-option">
+                  <input type="radio" name="payment" value="upi" />
+                  <div class="payment-radio"></div>
+                  <div>
+                    <div class="payment-label">📱 UPI Payment</div>
+                    <div class="payment-sub">Google Pay, PhonePe, Paytm</div>
+                  </div>
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block btn-lg">Place Order →</button>
+            </div>
+          </div>
+
+          <!-- ORDER SUMMARY -->
+          <div class="order-summary" id="checkoutSummary">
+            <!-- Rendered by JS -->
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- ORDER CONFIRMATION (Hidden by default) -->
+    <div id="orderConfirmation" class="order-confirmation" style="display:none;">
+      <div class="check-icon">✓</div>
+      <h2>Order Placed Successfully!</h2>
+      <p>Thank you for your purchase. We'll send a confirmation email shortly.</p>
+      <div class="order-id" id="confirmOrderId">ORD-XXXXXXXX</div>
+      <p style="font-size:13px;">Estimated delivery: 3-5 business days</p>
+      <div style="margin-top:30px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="index.html" class="btn btn-primary">Continue Shopping</a>
+        <a href="products.html" class="btn btn-ghost">Browse Products</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="mark-light"></span> LunaStep</div>
+        <p class="footer-desc">Premium footwear for every occasion.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="products.html">Shop</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <a href="account.html">My Account</a>
+        <a href="cart.html">Shopping Cart</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer-bottom">Online Shoes Selling System — © 2026 LunaStep. All rights reserved.</div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

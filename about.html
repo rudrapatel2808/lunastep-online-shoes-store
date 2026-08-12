@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn about LunaStep — our mission, values, and team behind the premium online shoe store." />
+  <title>About Us — LunaStep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <div class="topbar" id="topbar">
+    <a href="index.html" class="brand"><span class="mark"></span> LunaStep</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Shop</a>
+      <a href="about.html" class="nav-link active">About Us</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="topbar-actions">
+      <a href="cart.html" class="icon-btn" title="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <a href="login.html" class="btn btn-primary btn-sm">Login</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="about.html" class="active">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="login.html">Login / Register</a>
+  </div>
+
+  <div class="app">
+
+    <!-- ABOUT HERO -->
+    <div class="about-hero reveal in">
+      <div class="eyebrow">Our Story</div>
+      <h1>About LunaStep</h1>
+      <p>We believe great shoes are more than accessories — they're a foundation. Since 2020, we've been crafting an online shopping experience that blends luxury, technology, and comfort.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row reveal in">
+      <div class="stat-card">
+        <div class="stat-number">500+</div>
+        <div class="stat-label">Premium Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Happy Customers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100K+</div>
+        <div class="stat-label">Orders Delivered</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">6+</div>
+        <div class="stat-label">Years of Excellence</div>
+      </div>
+    </div>
+
+    <!-- MISSION & VISION -->
+    <div class="about-section reveal in">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:start;">
+        <div>
+          <div class="eyebrow">Mission</div>
+          <h2>Our Mission</h2>
+          <p>To democratize premium footwear by making high-quality, stylish shoes accessible to everyone through an intelligent online shopping platform. We leverage technology to provide personalized recommendations, real-time inventory tracking, and seamless checkout experiences.</p>
+        </div>
+        <div>
+          <div class="eyebrow">Vision</div>
+          <h2>Our Vision</h2>
+          <p>To become the world's most trusted online footwear destination, recognized for innovation, sustainability, and an unmatched customer experience. We envision a future where every step is taken in shoes that perfectly match the wearer's style and needs.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- WHY CHOOSE US -->
+    <div class="about-section reveal in">
+      <div style="text-align:center; margin-bottom:40px;">
+        <div class="eyebrow" style="justify-content:center;">Why Choose Us</div>
+        <h2 class="section-title">What Makes Us Different</h2>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">🎯</div>
+          <h3>Curated Selection</h3>
+          <p>Every shoe in our collection is hand-picked by our expert team for quality, style, and value. We work directly with top brands.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🚚</div>
+          <h3>Fast & Free Shipping</h3>
+          <p>Enjoy free shipping on all orders over $100. Most orders are delivered within 3-5 business days, nationwide.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">↩️</div>
+          <h3>Easy Returns</h3>
+          <p>Not the right fit? No worries. We offer hassle-free 30-day returns with full refund guarantee. No questions asked.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🛡️</div>
+          <h3>100% Authentic</h3>
+          <p>Every product is sourced directly from authorized manufacturers and distributors. Authenticity guaranteed or money back.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🤖</div>
+          <h3>Smart Recommendations</h3>
+          <p>Our AI-powered system learns your preferences and suggests shoes you'll love based on your browsing and purchase history.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">💬</div>
+          <h3>24/7 Support</h3>
+          <p>Our dedicated customer support team is available around the clock to help with sizing, orders, and any questions you might have.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- TEAM -->
+    <div class="about-section reveal in">
+      <div style="text-align:center; margin-bottom:40px;">
+        <div class="eyebrow" style="justify-content:center;">Our Team</div>
+        <h2 class="section-title">Meet the People Behind LunaStep</h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">RP</div>
+          <div class="team-name">Rudra Patel</div>
+          <div class="team-role">Founder & CEO</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:linear-gradient(135deg, #2563EB, #7C3AED);">AK</div>
+          <div class="team-name">Ananya Kumar</div>
+          <div class="team-role">Lead Designer</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:linear-gradient(135deg, #10B981, #0EA5E9);">VR</div>
+          <div class="team-name">Vivek Rao</div>
+          <div class="team-role">Tech Lead</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:linear-gradient(135deg, #F59E0B, #EF4444);">PM</div>
+          <div class="team-name">Priya Mehta</div>
+          <div class="team-role">Marketing Head</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="newsletter reveal in">
+      <h2>Ready to Step Up Your Shoe Game?</h2>
+      <p>Browse our curated collection and find your perfect pair today.</p>
+      <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+        <a href="products.html" class="btn btn-accent">Shop Now →</a>
+        <a href="contact.html" class="btn btn-ghost" style="border-color:rgba(255,255,255,0.3); color:#fff;">Contact Us</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="mark-light"></span> LunaStep</div>
+        <p class="footer-desc">Premium footwear for every occasion. We combine style, comfort, and technology to bring you the best shoe shopping experience online.</p>
+        <div class="social-links">
+          <div class="social-link">𝕏</div>
+          <div class="social-link">f</div>
+          <div class="social-link">in</div>
+          <div class="social-link">▶</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="products.html">Shop</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <a href="account.html">My Account</a>
+        <a href="cart.html">Shopping Cart</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="login.html?role=staff">Staff Portal</a>
+      </div>
+    </div>
+    <div class="footer-bottom">Online Shoes Selling System — © 2026 LunaStep. All rights reserved.</div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

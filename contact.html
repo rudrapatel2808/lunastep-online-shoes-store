@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Get in touch with LunaStep. Contact us for orders, support, or partnership inquiries." />
+  <title>Contact Us — LunaStep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <div class="topbar" id="topbar">
+    <a href="index.html" class="brand"><span class="mark"></span> LunaStep</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Shop</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+    </div>
+    <div class="topbar-actions">
+      <a href="cart.html" class="icon-btn" title="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <a href="login.html" class="btn btn-primary btn-sm">Login</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html" class="active">Contact</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="login.html">Login / Register</a>
+  </div>
+
+  <div class="app">
+
+    <div class="page-hero reveal in">
+      <div class="eyebrow" style="justify-content:center;">Get in Touch</div>
+      <h1>Contact Us</h1>
+      <p>Have a question about an order, need sizing help, or want to collaborate? We'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-layout">
+
+      <!-- CONTACT FORM -->
+      <div class="reveal in">
+        <div class="checkout-form">
+          <h3 style="margin-bottom:24px;">Send Us a Message</h3>
+          <form id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contactName">Your Name</label>
+                <input type="text" id="contactName" class="form-input" placeholder="John Doe" required />
+              </div>
+              <div class="form-group">
+                <label for="contactEmail">Your Email</label>
+                <input type="email" id="contactEmail" class="form-input" placeholder="john@example.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="contactSubject">Subject</label>
+              <select id="contactSubject" class="form-input" required>
+                <option value="">Select a topic</option>
+                <option value="order">Order Inquiry</option>
+                <option value="return">Returns & Exchanges</option>
+                <option value="sizing">Sizing Help</option>
+                <option value="partnership">Partnership</option>
+                <option value="feedback">Feedback</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="contactMessage">Message</label>
+              <textarea id="contactMessage" class="form-input" placeholder="Tell us how we can help..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Message →</button>
+          </form>
+          <div class="msg-success" id="contactSuccess">✓ Your message has been sent successfully! We'll get back to you within 24 hours.</div>
+        </div>
+      </div>
+
+      <!-- CONTACT INFO -->
+      <div class="reveal in" style="transition-delay:.15s;">
+        <div class="contact-info-cards">
+          <div class="contact-card">
+            <div class="contact-card-icon">📍</div>
+            <div>
+              <h4>Store Address</h4>
+              <p>123 Fashion Street, Shoe District<br>New York, NY 10001, USA</p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-card-icon">📞</div>
+            <div>
+              <h4>Phone</h4>
+              <p>+1 (555) 123-4567<br>Mon-Sat: 9 AM - 9 PM EST</p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-card-icon">✉️</div>
+            <div>
+              <h4>Email</h4>
+              <p>support@shoestore.com<br>orders@shoestore.com</p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-card-icon">🕐</div>
+            <div>
+              <h4>Business Hours</h4>
+              <p>Monday - Saturday: 9 AM - 9 PM<br>Sunday: 10 AM - 6 PM</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-placeholder">
+          📍 Map — 123 Fashion Street, New York
+        </div>
+
+        <div class="social-links" style="margin-top:24px;">
+          <div class="social-link" title="Twitter">𝕏</div>
+          <div class="social-link" title="Facebook">f</div>
+          <div class="social-link" title="LinkedIn">in</div>
+          <div class="social-link" title="YouTube">▶</div>
+          <div class="social-link" title="Instagram">📷</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FAQ SECTION -->
+    <div class="section reveal in">
+      <div style="text-align:center; margin-bottom:40px;">
+        <div class="eyebrow" style="justify-content:center;">FAQ</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+      <div class="grid-2">
+        <div class="value-card" style="text-align:left;">
+          <h3 style="font-size:16px;">How long does shipping take?</h3>
+          <p>Standard shipping takes 3-5 business days. Express shipping (1-2 days) is available at checkout for an additional fee. Free shipping on orders over $100.</p>
+        </div>
+        <div class="value-card" style="text-align:left;">
+          <h3 style="font-size:16px;">What is your return policy?</h3>
+          <p>We offer a 30-day hassle-free return policy. Items must be unworn and in original packaging. Refunds are processed within 5-7 business days.</p>
+        </div>
+        <div class="value-card" style="text-align:left;">
+          <h3 style="font-size:16px;">How do I track my order?</h3>
+          <p>Once your order ships, you'll receive a tracking number via email. You can also track your order by logging into your account.</p>
+        </div>
+        <div class="value-card" style="text-align:left;">
+          <h3 style="font-size:16px;">Are all products authentic?</h3>
+          <p>Yes! Every product is 100% authentic, sourced directly from authorized manufacturers and distributors. We guarantee authenticity or full refund.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="mark-light"></span> LunaStep</div>
+        <p class="footer-desc">Premium footwear for every occasion.</p>
+        <div class="social-links">
+          <div class="social-link">𝕏</div>
+          <div class="social-link">f</div>
+          <div class="social-link">in</div>
+          <div class="social-link">▶</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="products.html">Shop</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <a href="account.html">My Account</a>
+        <a href="cart.html">Shopping Cart</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="login.html?role=staff">Staff Portal</a>
+      </div>
+    </div>
+    <div class="footer-bottom">Online Shoes Selling System — © 2026 LunaStep. All rights reserved.</div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Contact form submit
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        contactForm.style.display = 'none';
+        document.getElementById('contactSuccess').style.display = 'block';
+        showToast('Message sent successfully!', 'success');
+      });
+    }
+  </script>
+</body>
+</html>

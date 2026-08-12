@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Manager - LunaStep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .inv-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:16px; margin-bottom:30px; }
+    .inv-stat { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+    .inv-stat .val { font-size:28px; font-weight:800; color:var(--text); }
+    .inv-stat .lbl { font-size:12px; font-weight:700; color:var(--text-dim); margin-top:4px; }
+    .inv-toolbar { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
+    .inv-toolbar input, .inv-toolbar select { padding:10px 14px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; background:var(--bg2); color:var(--text); }
+    .inv-toolbar input { flex:1; min-width:200px; }
+    .stock-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .stock-table th { text-align:left; padding:12px 14px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-faint); border-bottom:2px solid var(--border); }
+    .stock-table td { padding:10px 14px; border-bottom:1px solid var(--border); }
+    .stock-table tr:hover { background:var(--bg2); }
+    .stock-low { color:var(--danger); font-weight:800; }
+    .stock-ok { color:#10B981; font-weight:700; }
+    .stock-out { color:var(--danger); font-weight:800; background:rgba(239,68,68,0.1); border-radius:20px; padding:2px 10px; }
+    .stock-badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:800; }
+    .stock-badge.low { background:rgba(239,68,68,0.1); color:var(--danger); }
+    .stock-badge.ok { background:rgba(16,185,129,0.1); color:#10B981; }
+    .stock-badge.out { background:rgba(239,68,68,0.2); color:var(--danger); }
+    .stock-input { width:70px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:13px; font-weight:700; text-align:center; background:var(--bg2); color:var(--text); }
+    .stock-input:focus { outline:none; border-color:var(--primary); }
+    .modal-overlay { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.5); display:none; z-index:100; align-items:center; justify-content:center; }
+    .modal-overlay.active { display:flex; }
+    .modal-box { background:var(--card); border-radius:16px; padding:32px; max-width:440px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+    .modal-box h3 { margin-bottom:20px; }
+    .modal-box .form-group { margin-bottom:14px; }
+    .modal-box label { display:block; font-size:12px; font-weight:700; margin-bottom:4px; color:var(--text-dim); }
+    .modal-box input, .modal-box select { width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; background:var(--bg2); color:var(--text); }
+    .modal-actions { display:flex; gap:10px; margin-top:20px; }
+  </style>
+</head>
+<body>
+
+  <!-- RBAC Check -->
+  <script src="api-config.js"></script>
+  <script src="auth.js"></script>
+  <script>checkAuth('manager');</script>
+
+  <div class="topbar">
+    <div class="brand"><span class="mark"></span> LunaStep Inventory</div>
+    <div class="tabs">
+      <a href="inventory.html" class="tab active">Inventory Explorer</a>
+      <a href="admin.html" class="tab">Admin Dashboard</a>
+      <a href="index.html" class="tab">View Store</a>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="section reveal in">
+      <h2 class="section-title">Inventory Explorer</h2>
+      <p style="color:var(--text-dim); margin-bottom:24px;">Real-time stock tracking and management for all product variants.</p>
+
+      <!-- Stats Row -->
+      <div class="inv-stats" id="invStats">
+        <div class="inv-stat"><div class="val" id="statTotal">-</div><div class="lbl">Total Variants</div></div>
+        <div class="inv-stat"><div class="val" id="statInStock">-</div><div class="lbl">In Stock</div></div>
+        <div class="inv-stat"><div class="val stock-low" id="statLowStock">-</div><div class="lbl">Low Stock</div></div>
+        <div class="inv-stat"><div class="val stock-low" id="statOutOfStock">-</div><div class="lbl">Out of Stock</div></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="inv-toolbar">
+        <input type="text" id="invSearch" placeholder="🔍 Search by product name or SKU..." />
+        <select id="invFilter">
+          <option value="all">All Items</option>
+          <option value="low">Low Stock Only</option>
+          <option value="out">Out of Stock</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="openAddVariantModal()">+ Add Variant</button>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="glass panel">
+        <table class="stock-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Color</th>
+              <th>Stock</th>
+              <th>Threshold</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody">
+            <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text-dim);">Loading inventory...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Variant Modal -->
+  <div class="modal-overlay" id="addVariantModal">
+    <div class="modal-box">
+      <h3>Add New Variant</h3>
+      <form id="addVariantForm">
+        <div class="form-group">
+          <label for="varProductId">Product</label>
+          <select id="varProductId" required></select>
+        </div>
+        <div class="form-group">
+          <label for="varSize">Size</label>
+          <input type="text" id="varSize" placeholder="e.g., 9" required />
+        </div>
+        <div class="form-group">
+          <label for="varColor">Color</label>
+          <input type="text" id="varColor" placeholder="e.g., Black" required />
+        </div>
+        <div class="form-group">
+          <label for="varSKU">SKU</label>
+          <input type="text" id="varSKU" placeholder="e.g., NIK-RUN-BLK-9" required />
+        </div>
+        <div class="form-group">
+          <label for="varStock">Initial Stock</label>
+          <input type="number" id="varStock" value="10" min="0" required />
+        </div>
+        <div class="form-group">
+          <label for="varThreshold">Low Stock Threshold</label>
+          <input type="number" id="varThreshold" value="5" min="0" required />
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Add Variant</button>
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let inventoryData = [];
+
+    // Load inventory from backend
+    async function loadInventory() {
+      const result = await apiFetch('/inventory.php');
+      if (result && Array.isArray(result)) {
+        inventoryData = result;
+        renderInventoryTable();
+        updateInvStats();
+      } else {
+        // Fallback
+        document.getElementById('inventoryBody').innerHTML = `
+          <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text-dim);">
+            Backend unavailable. Start XAMPP and import schema.sql to see live data.
+          </td></tr>`;
+      }
+    }
+
+    function renderInventoryTable() {
+      const tbody = document.getElementById('inventoryBody');
+      const searchQuery = (document.getElementById('invSearch')?.value || '').toLowerCase();
+      const filter = document.getElementById('invFilter')?.value || 'all';
+
+      let filtered = [...inventoryData];
+
+      // Search
+      if (searchQuery) {
+        filtered = filtered.filter(v =>
+          v.product_name.toLowerCase().includes(searchQuery) ||
+          v.sku.toLowerCase().includes(searchQuery)
+        );
+      }
+
+      // Filter
+      if (filter === 'low') {
+        filtered = filtered.filter(v => v.stock_status === 'low_stock');
+      } else if (filter === 'out') {
+        filtered = filtered.filter(v => v.stock_status === 'out_of_stock');
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text-dim);">No items match your filter.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(v => {
+        const statusClass = v.stock_status === 'out_of_stock' ? 'out' : v.stock_status === 'low_stock' ? 'low' : 'ok';
+        const statusLabel = v.stock_status === 'out_of_stock' ? 'Out of Stock' : v.stock_status === 'low_stock' ? 'Low Stock' : 'In Stock';
+        return `
+          <tr>
+            <td><code style="font-size:12px; font-weight:700;">${v.sku}</code></td>
+            <td>${v.product_name}</td>
+            <td>${v.size}</td>
+            <td>${v.color}</td>
+            <td>
+              <input type="number" class="stock-input" value="${v.stock_quantity}" min="0" 
+                     onchange="updateStock(${v.id}, this.value)" />
+            </td>
+            <td>${v.low_stock_threshold}</td>
+            <td><span class="stock-badge ${statusClass}">${statusLabel}</span></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="deleteVariant(${v.id})" title="Delete">🗑️</button></td>
+          </tr>`;
+      }).join('');
+    }
+
+    function updateInvStats() {
+      const total = inventoryData.length;
+      const inStock = inventoryData.filter(v => v.stock_status === 'in_stock').length;
+      const lowStock = inventoryData.filter(v => v.stock_status === 'low_stock').length;
+      const outOfStock = inventoryData.filter(v => v.stock_status === 'out_of_stock').length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statInStock').textContent = inStock;
+      document.getElementById('statLowStock').textContent = lowStock;
+      document.getElementById('statOutOfStock').textContent = outOfStock;
+    }
+
+    // Update stock quantity
+    async function updateStock(variantId, newQty) {
+      const result = await apiFetch('/inventory.php', {
+        method: 'PUT',
+        body: { id: variantId, stock_quantity: parseInt(newQty) }
+      });
+      if (result && !result.error) {
+        showToast('Stock updated!', 'success');
+        loadInventory(); // Refresh
+      } else {
+        showToast('Failed to update stock', 'error');
+      }
+    }
+
+    // Delete variant
+    async function deleteVariant(variantId) {
+      if (!confirm('Delete this variant?')) return;
+      const result = await apiFetch(`/inventory.php?id=${variantId}`, { method: 'DELETE' });
+      if (result && !result.error) {
+        showToast('Variant deleted.', 'success');
+        loadInventory();
+      } else {
+        showToast('Failed to delete variant', 'error');
+      }
+    }
+
+    // Add variant modal
+    async function openAddVariantModal() {
+      // Load products for dropdown
+      const products = await apiFetch('/products.php');
+      const select = document.getElementById('varProductId');
+      if (products && Array.isArray(products)) {
+        select.innerHTML = products.map(p => `<option value="${p.id}">${p.name} (${p.brand || 'N/A'})</option>`).join('');
+      } else {
+        select.innerHTML = '<option>No products available</option>';
+      }
+      document.getElementById('addVariantModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('addVariantModal').classList.remove('active');
+    }
+
+    // Add variant form submit
+    document.getElementById('addVariantForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const result = await apiFetch('/inventory.php', {
+        method: 'POST',
+        body: {
+          product_id: parseInt(document.getElementById('varProductId').value),
+          size: document.getElementById('varSize').value,
+          color: document.getElementById('varColor').value,
+          sku: document.getElementById('varSKU').value,
+          stock_quantity: parseInt(document.getElementById('varStock').value),
+          low_stock_threshold: parseInt(document.getElementById('varThreshold').value)
+        }
+      });
+      if (result && !result.error) {
+        showToast('Variant added!', 'success');
+        closeModal();
+        loadInventory();
+        document.getElementById('addVariantForm').reset();
+      } else {
+        showToast(result?.message || 'Failed to add variant', 'error');
+      }
+    });
+
+    // Search & filter
+    document.getElementById('invSearch')?.addEventListener('input', renderInventoryTable);
+    document.getElementById('invFilter')?.addEventListener('change', renderInventoryTable);
+
+    // Initial load
+    loadInventory();
+  </script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - LunaStep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .admin-tabs { display:flex; gap:0; margin-bottom:24px; border-bottom:2px solid var(--border); }
+    .admin-tab { padding:12px 24px; font-size:13px; font-weight:700; color:var(--text-dim); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s; }
+    .admin-tab:hover { color:var(--text); }
+    .admin-tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+    .admin-section { display:none; }
+    .admin-section.active { display:block; }
+    .product-actions { display:flex; gap:8px; }
+    .product-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .product-table th { text-align:left; padding:12px 14px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-faint); border-bottom:2px solid var(--border); }
+    .product-table td { padding:10px 14px; border-bottom:1px solid var(--border); }
+    .product-table tr:hover { background:var(--bg2); }
+    .product-table img { width:40px; height:40px; object-fit:contain; border-radius:8px; background:var(--bg2); }
+    .modal-overlay { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.5); display:none; z-index:100; align-items:center; justify-content:center; }
+    .modal-overlay.active { display:flex; }
+    .modal-box { background:var(--card); border-radius:16px; padding:32px; max-width:500px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:80vh; overflow-y:auto; }
+    .modal-box h3 { margin-bottom:20px; }
+    .modal-box .form-group { margin-bottom:14px; }
+    .modal-box label { display:block; font-size:12px; font-weight:700; margin-bottom:4px; color:var(--text-dim); }
+    .modal-box input, .modal-box select, .modal-box textarea { width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; background:var(--bg2); color:var(--text); }
+    .modal-box textarea { min-height:80px; resize:vertical; }
+    .modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .status-select { background:transparent; border:1px solid var(--border); border-radius:6px; padding:4px 8px; font-family:inherit; font-size:12px; font-weight:700; color:var(--text); cursor:pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- RBAC Check -->
+  <script src="api-config.js"></script>
+  <script src="auth.js"></script>
+  <script>checkAuth('admin');</script>
+
+  <div class="topbar">
+    <div class="brand"><span class="mark"></span> LunaStep Admin</div>
+    <div class="tabs">
+      <a href="admin.html" class="tab active">Dashboard</a>
+      <a href="inventory.html" class="tab">Inventory</a>
+      <a href="index.html" class="tab">View Store</a>
+    </div>
+    <div class="topbar-actions">
+      <select id="currencySelector" style="background:transparent; border:none; color:var(--primary); font-family:inherit; font-weight:700; cursor:pointer; margin-right:8px; outline:none;">
+        <option value="USD">🇺🇸 USD ($)</option>
+        <option value="EUR">🇪🇺 EUR (€)</option>
+        <option value="GBP">🇬🇧 GBP (£)</option>
+        <option value="INR">🇮🇳 INR (₹)</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="section">
+
+      <!-- Admin Tabs -->
+      <div class="admin-tabs">
+        <div class="admin-tab active" data-section="overview">📊 Overview</div>
+        <div class="admin-tab" data-section="orders">📦 Orders</div>
+        <div class="admin-tab" data-section="products">🏷️ Products</div>
+        <div class="admin-tab" data-section="customers">👥 Customers</div>
+      </div>
+
+      <!-- OVERVIEW SECTION -->
+      <div class="admin-section active" id="sec-overview">
+        <div class="kpi-row reveal in" style="transition-delay:.1s;">
+          <div class="glass kpi">
+            <div class="top"><div class="ico">💰</div></div>
+            <div class="val" id="kpiRevenue">$0</div><div class="lbl">Today's Revenue</div>
+          </div>
+          <div class="glass kpi">
+            <div class="top"><div class="ico">🛒</div></div>
+            <div class="val" id="kpiOrders">0</div><div class="lbl">Total Orders</div>
+          </div>
+          <div class="glass kpi">
+            <div class="top"><div class="ico">👥</div></div>
+            <div class="val" id="kpiCustomers">0</div><div class="lbl">Customers</div>
+          </div>
+          <div class="glass kpi">
+            <div class="top"><div class="ico">⚠️</div></div>
+            <div class="val" id="kpiLowStock">0</div><div class="lbl">Low Stock Alerts</div>
+          </div>
+        </div>
+
+        <div class="glass panel reveal in" style="transition-delay:.2s;">
+          <div class="panel-head" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3>Recent Orders</h3>
+            <button class="btn btn-ghost btn-sm" onclick="document.querySelector('[data-section=orders]').click()">View All</button>
+          </div>
+          <table>
+            <thead><tr><th>Order</th><th>Customer</th><th>Item</th><th>Status</th><th>Total</th></tr></thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS SECTION -->
+      <div class="admin-section" id="sec-orders">
+        <div class="glass panel">
+          <div class="panel-head" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3>All Orders</h3>
+          </div>
+          <table>
+            <thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody id="allOrdersBody">
+              <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-dim);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS SECTION -->
+      <div class="admin-section" id="sec-products">
+        <div class="glass panel">
+          <div class="panel-head" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3>Product Catalog</h3>
+            <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
+          </div>
+          <table class="product-table">
+            <thead><tr><th></th><th>Name</th><th>Brand</th><th>Category</th><th>Price</th><th>Sale</th><th>Actions</th></tr></thead>
+            <tbody id="productsBody">
+              <tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-dim);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS SECTION -->
+      <div class="admin-section" id="sec-customers">
+        <div class="glass panel">
+          <div class="panel-head" style="margin-bottom:20px;"><h3>Registered Customers</h3></div>
+          <table class="product-table">
+            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+            <tbody id="customersBody">
+              <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-dim);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Add/Edit Product Modal -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-box">
+      <h3 id="productModalTitle">Add New Product</h3>
+      <form id="productForm">
+        <input type="hidden" id="editProductId" />
+        <div class="form-group">
+          <label for="prodName">Product Name *</label>
+          <input type="text" id="prodName" required placeholder="e.g., Air Max Runner" />
+        </div>
+        <div class="form-group">
+          <label for="prodBrand">Brand</label>
+          <input type="text" id="prodBrand" placeholder="e.g., Nike" />
+        </div>
+        <div class="form-group">
+          <label for="prodCategory">Category</label>
+          <select id="prodCategory">
+            <option value="1">Running</option>
+            <option value="2">Casual</option>
+            <option value="3">Trail</option>
+            <option value="4">Performance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="prodPrice">Base Price ($) *</label>
+          <input type="number" id="prodPrice" required step="0.01" min="0" placeholder="199.00" />
+        </div>
+        <div class="form-group">
+          <label for="prodSalePrice">Sale Price ($)</label>
+          <input type="number" id="prodSalePrice" step="0.01" min="0" placeholder="Leave empty if no sale" />
+        </div>
+        <div class="form-group">
+          <label for="prodImage">Image URL</label>
+          <input type="text" id="prodImage" placeholder="img/runner.png" />
+        </div>
+        <div class="form-group">
+          <label for="prodDesc">Description</label>
+          <textarea id="prodDesc" placeholder="Describe the product..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="productSubmitBtn">Add Product</button>
+          <button type="button" class="btn btn-ghost" onclick="closeProductModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // ---- Admin Tab Switching ----
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('sec-' + tab.dataset.section).classList.add('active');
+
+        // Load data on tab switch
+        if (tab.dataset.section === 'orders') loadAllOrders();
+        if (tab.dataset.section === 'products') loadAdminProducts();
+        if (tab.dataset.section === 'customers') loadCustomers();
+      });
+    });
+
+    // ---- Load Dashboard Stats ----
+    async function loadStats() {
+      const result = await apiFetch('/stats.php');
+      if (!result || result.error) return;
+
+      document.getElementById('kpiRevenue').textContent = '$' + (result.today_revenue >= 1000 ? (result.today_revenue / 1000).toFixed(1) + 'k' : result.today_revenue.toFixed(0));
+      document.getElementById('kpiOrders').textContent = result.total_orders;
+      document.getElementById('kpiCustomers').textContent = result.total_customers.toLocaleString();
+      document.getElementById('kpiLowStock').textContent = result.low_stock_alerts;
+    }
+    loadStats();
+
+    // ---- All Orders Tab ----
+    async function loadAllOrders() {
+      const result = await apiFetch('/orders.php?limit=50');
+      const tbody = document.getElementById('allOrdersBody');
+      if (!result || !Array.isArray(result)) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-dim);">No orders found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = result.map(o => {
+        const name = (o.first_name && o.last_name) ? escapeHtml(`${o.first_name} ${o.last_name}`) : 'Guest';
+        const date = new Date(o.created_at).toLocaleDateString();
+        return `
+          <tr>
+            <td><strong>${escapeHtml(o.order_number)}</strong></td>
+            <td>${name}</td>
+            <td>${formatPrice(parseFloat(o.total_amount))}</td>
+            <td>${escapeHtml(o.payment_method)}</td>
+            <td>
+              <select class="status-select" onchange="updateOrderStatus(${o.id}, this.value)">
+                <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+                <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
+                <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
+                <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+                <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+              </select>
+            </td>
+            <td>${date}</td>
+          </tr>`;
+      }).join('');
+    }
+
+    // ---- Products Tab ----
+    async function loadAdminProducts() {
+      const result = await apiFetch('/products.php');
+      const tbody = document.getElementById('productsBody');
+      if (!result || !Array.isArray(result)) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-dim);">No products found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = result.map(p => `
+        <tr>
+          <td><img src="${p.image_url || 'img/runner.png'}" alt="${p.name}" /></td>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.brand || '-'}</td>
+          <td>${p.category_name || '-'}</td>
+          <td>$${parseFloat(p.base_price).toFixed(2)}</td>
+          <td>${p.discount_price ? '$' + parseFloat(p.discount_price).toFixed(2) : '-'}</td>
+          <td class="product-actions">
+            <button class="btn btn-ghost btn-sm" onclick="editProduct(${p.id})">✏️</button>
+            <button class="btn btn-ghost btn-sm" onclick="deleteProduct(${p.id})" style="color:var(--danger);">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Product Modal
+    function openProductModal(product = null) {
+      document.getElementById('editProductId').value = product ? product.id : '';
+      document.getElementById('productModalTitle').textContent = product ? 'Edit Product' : 'Add New Product';
+      document.getElementById('productSubmitBtn').textContent = product ? 'Save Changes' : 'Add Product';
+      
+      if (product) {
+        document.getElementById('prodName').value = product.name || '';
+        document.getElementById('prodBrand').value = product.brand || '';
+        document.getElementById('prodCategory').value = product.category_id || '1';
+        document.getElementById('prodPrice').value = product.base_price || '';
+        document.getElementById('prodSalePrice').value = product.discount_price || '';
+        document.getElementById('prodImage').value = product.image_url || '';
+        document.getElementById('prodDesc').value = product.description || '';
+      } else {
+        document.getElementById('productForm').reset();
+      }
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    async function editProduct(productId) {
+      const result = await apiFetch(`/products.php?id=${productId}`);
+      if (result && !result.error) {
+        openProductModal(result);
+      }
+    }
+
+    async function deleteProduct(productId) {
+      if (!confirm('Delete this product? This cannot be undone.')) return;
+      const result = await apiFetch(`/products.php?id=${productId}`, { method: 'DELETE' });
+      if (result && !result.error) {
+        showToast('Product deleted.', 'success');
+        loadAdminProducts();
+      } else {
+        showToast(result?.message || 'Failed to delete product.', 'error');
+      }
+    }
+
+    // Product form submit
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const editId = document.getElementById('editProductId').value;
+      const body = {
+        name: document.getElementById('prodName').value,
+        brand: document.getElementById('prodBrand').value,
+        category_id: parseInt(document.getElementById('prodCategory').value),
+        base_price: parseFloat(document.getElementById('prodPrice').value),
+        discount_price: document.getElementById('prodSalePrice').value ? parseFloat(document.getElementById('prodSalePrice').value) : null,
+        image_url: document.getElementById('prodImage').value || null,
+        description: document.getElementById('prodDesc').value || null
+      };
+
+      let result;
+      if (editId) {
+        body.id = parseInt(editId);
+        result = await apiFetch('/products.php', { method: 'PUT', body });
+      } else {
+        result = await apiFetch('/products.php', { method: 'POST', body });
+      }
+
+      if (result && !result.error) {
+        showToast(editId ? 'Product updated!' : 'Product added!', 'success');
+        closeProductModal();
+        loadAdminProducts();
+      } else {
+        showToast(result?.message || 'Failed to save product.', 'error');
+      }
+    });
+
+    // ---- Customers Tab ----
+    async function loadCustomers() {
+      // We'd need a customers endpoint — for now show from users
+      const tbody = document.getElementById('customersBody');
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-dim);">Customer list requires a users API endpoint. Seed data has Admin and Manager users.</td></tr>';
+    }
+  </script>
+</body>
+</html>

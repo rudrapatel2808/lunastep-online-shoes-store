@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Review your shopping cart and proceed to checkout." />
+  <title>Shopping Cart — LunaStep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <div class="topbar" id="topbar">
+    <a href="index.html" class="brand"><span class="mark"></span> LunaStep</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Shop</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="topbar-actions">
+      <select id="currencySelector" style="background:transparent; border:none; color:var(--primary); font-family:inherit; font-weight:700; cursor:pointer; outline:none; font-size:13px;">
+        <option value="USD">🇺🇸 USD ($)</option>
+        <option value="EUR">🇪🇺 EUR (€)</option>
+        <option value="GBP">🇬🇧 GBP (£)</option>
+        <option value="INR">🇮🇳 INR (₹)</option>
+      </select>
+      <a href="cart.html" class="icon-btn" title="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <a href="login.html" class="btn btn-primary btn-sm">Login</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="cart.html" class="active">🛒 Cart</a>
+    <a href="login.html">Login / Register</a>
+  </div>
+
+  <div class="app">
+
+    <div class="page-hero reveal in">
+      <h1>Shopping Cart</h1>
+      <p>Review your items and proceed to checkout</p>
+    </div>
+
+    <!-- CART CONTENT (shown when items exist) -->
+    <div class="cart-layout reveal in" id="cartContent">
+      <div class="cart-items" id="cartItemsList">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="order-summary" id="cartSummary">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- EMPTY CART (shown when no items) -->
+    <div class="cart-empty reveal in" id="cartEmpty" style="display:none;">
+      <div class="empty-icon">🛒</div>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added any items to your cart yet. Start shopping to find amazing shoes!</p>
+      <a href="products.html" class="btn btn-primary">Start Shopping →</a>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="mark-light"></span> LunaStep</div>
+        <p class="footer-desc">Premium footwear for every occasion.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="products.html">Shop</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <a href="account.html">My Account</a>
+        <a href="cart.html">Shopping Cart</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="login.html?role=staff">Staff Portal</a>
+      </div>
+    </div>
+    <div class="footer-bottom">Online Shoes Selling System — © 2026 LunaStep. All rights reserved.</div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
