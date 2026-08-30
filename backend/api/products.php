@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // backend/api/products.php — Products API
 // GET: list all, single by ID, search, with variants
 // POST/PUT/DELETE: admin CRUD (Phase 4)
@@ -82,7 +82,7 @@ if ($method === 'GET') {
 // POST — Create new product (Admin only)
 // ==========================================
 elseif ($method === 'POST') {
-    $user = requireRole('admin');
+    $user = requireRole(['admin', 'manager']);
     $data = getRequestBody();
 
     if (!empty($data->name) && !empty($data->base_price)) {
@@ -119,7 +119,7 @@ elseif ($method === 'POST') {
 // PUT — Update product (Admin only)
 // ==========================================
 elseif ($method === 'PUT') {
-    $user = requireRole('admin');
+    $user = requireRole(['admin', 'manager']);
     $data = getRequestBody();
 
     if (!empty($data->id)) {
@@ -158,7 +158,7 @@ elseif ($method === 'PUT') {
 // DELETE — Delete product (Admin only)
 // ==========================================
 elseif ($method === 'DELETE') {
-    $user = requireRole('admin');
+    $user = requireRole(['admin', 'manager']);
 
     if (isset($_GET['id'])) {
         $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");

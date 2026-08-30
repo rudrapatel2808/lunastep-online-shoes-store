@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // backend/api/categories.php — Categories CRUD
 include_once __DIR__ . '/config.php';
 
@@ -9,7 +9,7 @@ if ($method === 'GET') {
     echo json_encode($stmt->fetchAll());
 }
 elseif ($method === 'POST') {
-    requireRole('admin');
+    requireRole(['admin', 'manager']);
     $data = getRequestBody();
     if (empty($data->name)) jsonResponse(["message" => "Category name required."], 400);
     $desc = isset($data->description) ? $data->description : null;
@@ -18,7 +18,7 @@ elseif ($method === 'POST') {
     jsonResponse(["message" => "Category created.", "id" => $conn->lastInsertId()], 201);
 }
 elseif ($method === 'PUT') {
-    requireRole('admin');
+    requireRole(['admin', 'manager']);
     $data = getRequestBody();
     if (empty($data->id)) jsonResponse(["message" => "Category id required."], 400);
     $fields = []; $params = [];
@@ -31,7 +31,7 @@ elseif ($method === 'PUT') {
     jsonResponse(["message" => "Category updated."]);
 }
 elseif ($method === 'DELETE') {
-    requireRole('admin');
+    requireRole(['admin', 'manager']);
     if (!isset($_GET['id'])) jsonResponse(["message" => "Category id required."], 400);
     $stmt = $conn->prepare("DELETE FROM categories WHERE id = ?");
     $stmt->execute([$_GET['id']]);
