@@ -136,7 +136,9 @@ elseif ($method === 'GET') {
     else {
         requireRole(['admin', 'manager']);
         $query = "
-            SELECT o.*, u.first_name, u.last_name 
+            SELECT o.*, u.first_name, u.last_name,
+                   CONCAT(COALESCE(u.first_name,''), ' ', COALESCE(u.last_name,'')) as customer_name,
+                   u.email as customer_email
             FROM orders o 
             LEFT JOIN users u ON o.user_id = u.id 
             ORDER BY o.created_at DESC
@@ -176,7 +178,10 @@ elseif ($method === 'PUT') {
     $user = requireRole(['admin', 'manager']);
     $data = getRequestBody();
 
-    if (empty($data->id)) jsonResponse(["message" => "Order ID is required."], 400);
+    // Accept id from URL param OR body
+    $orderId = !empty($_GET['id']) ? intval($_GET['id']) : (isset($data->id) ? intval($data->id) : null);
+    if (!$orderId) jsonResponse(["message" => "Order ID is required."], 400);
+    $data->id = $orderId;
 
     $fields = []; $params = [];
 
